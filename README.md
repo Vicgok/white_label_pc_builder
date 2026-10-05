@@ -53,6 +53,8 @@ All retailer contacts start empty. WhatsApp buttons appear only when a number is
 
 PC and hardware imagery uses locally stored, generated photorealistic studio images: graphite metal, tempered glass, neutral backgrounds, physically grounded shadows and restrained white lighting. Ten optimized JPEG assets live in `public/images/products/`; their mapping is in `src/config/product-images.ts`. Air and liquid coolers have separate images. Images are representative, not verified photographs of exact SKUs; an optional `image` field on each catalog component can supply its real product photo. Generation prompts and provenance are in [docs/product-image-prompts.md](docs/product-image-prompts.md). No runtime image-generation service or external image dependency is used.
 
+The homepage scroll hero uses eight separate transparent illustrated component layers. Their production WebP/PNG replacement slots and alignment requirements are in [docs/hero-assets.md](docs/hero-assets.md).
+
 Generated images must be unbranded and contain no readable labels, model/specification text, stickers, serial numbers or badges. CPU, GPU, Memory and Cooling callouts are rendered separately in semantic HTML/CSS by `ProductCallouts`, using the actual selected catalog data. Desktop callouts use leader lines and markers; smaller screens show a readable specification grid. Never ask an image generator to paint specification text into the photograph.
 
 **All prices and specifications are illustrative prototype data.** Stock, warranty, retailer services and final quotations must be verified with the retailer. No business statistics or unverified contact details are supplied.

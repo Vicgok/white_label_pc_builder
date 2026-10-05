@@ -2,16 +2,17 @@ import { test, expect } from '@playwright/test';
 
 test('local product photography loads across hardware categories and cooler types', async ({ page }) => {
   await page.goto('/?brand=byos');
-  const hero = page.locator('.hero-art img');
+  const layers = page.locator('.hero-pc-layer');
+  await expect(layers).toHaveCount(8);
+  await layers.evaluateAll(async images => Promise.all(images.map(image => (image as HTMLImageElement).decode())));
+  expect(await layers.evaluateAll(images => images.every(image => (image as HTMLImageElement).naturalWidth > 0))).toBe(true);
+  const hero = page.locator('.featured-art img');
   await expect(hero).toHaveAttribute('src', '/images/products/pc-tower.jpg');
-  await expect(hero).toHaveAttribute('fetchpriority', 'high');
   await hero.evaluate(image => (image as HTMLImageElement).decode());
   expect(await hero.evaluate(image => (image as HTMLImageElement).naturalWidth)).toBeGreaterThan(1000);
-  expect(await hero.evaluate(image => getComputedStyle(image).objectFit)).toBe('contain');
+  await page.goto('/builds/studio-pro');
   const labels = page.getByLabel('Build specification labels');
   await expect(labels.locator('dt')).toHaveText(['CPU', 'GPU', 'Memory', 'Cooling']);
-  await expect(labels.locator('dd')).toHaveText(['Ryzen 7 9700X', 'RTX 5070 · 12GB', '32GB DDR5', 'AK400 · air']);
-  await page.goto('/builds/studio-pro');
   await expect(labels.locator('dd')).toHaveText(['Ryzen 9 9900X', 'RTX 5070 Ti · 16GB', '64GB DDR5', 'AK620 · air']);
   await page.goto('/components');
   for (const [label, asset] of [['CPU', 'cpu'], ['GPU', 'gpu'], ['Motherboard', 'motherboard'], ['Memory', 'memory'], ['Storage', 'storage'], ['Power Supply', 'psu'], ['Case', 'case'], ['Cooling', 'cooling']]) {
@@ -146,7 +147,10 @@ test('responsive pages and mobile builder sheets have no horizontal overflow', a
     for (const route of ['/?brand=computergarage360', '/builds', '/builds/studio-pro', '/components', '/why-us', '/support', '/builder?build=vortex-1440']) {
       await page.goto(route); await expect(page.locator('main h1')).toBeVisible();
       expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth), `${route} at ${width}px`).toBe(true);
-      if (route.startsWith('/?') || route === '/builds/studio-pro') {
+      if (route.startsWith('/?')) {
+        await expect(page.locator('.hero-pc-layer')).toHaveCount(8);
+      }
+      if (route === '/builds/studio-pro') {
         const labels = page.getByLabel('Build specification labels').locator('.callout-label');
         await expect(labels).toHaveCount(4);
         for (const label of await labels.all()) await expect(label).toBeVisible();
