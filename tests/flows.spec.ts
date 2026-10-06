@@ -3,7 +3,7 @@ import { test, expect } from '@playwright/test';
 test('local product photography loads across hardware categories and cooler types', async ({ page }) => {
   await page.goto('/?brand=byos');
   const layers = page.locator('.hero-pc-layer');
-  await expect(layers).toHaveCount(8);
+  await expect(layers).toHaveCount(7);
   await layers.evaluateAll(async images => Promise.all(images.map(image => (image as HTMLImageElement).decode())));
   expect(await layers.evaluateAll(images => images.every(image => (image as HTMLImageElement).naturalWidth > 0))).toBe(true);
   const hero = page.locator('.featured-art img');
@@ -148,7 +148,7 @@ test('responsive pages and mobile builder sheets have no horizontal overflow', a
       await page.goto(route); await expect(page.locator('main h1')).toBeVisible();
       expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth), `${route} at ${width}px`).toBe(true);
       if (route.startsWith('/?')) {
-        await expect(page.locator('.hero-pc-layer')).toHaveCount(8);
+        await expect(page.locator('.hero-pc-layer')).toHaveCount(width < 768 ? 4 : 7);
       }
       if (route === '/builds/studio-pro') {
         const labels = page.getByLabel('Build specification labels').locator('.callout-label');

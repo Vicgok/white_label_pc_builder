@@ -1,9 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 700 700" fill="none">
-  <defs><linearGradient id="p" x1="292" y1="478" x2="478" y2="550" gradientUnits="userSpaceOnUse"><stop stop-color="#4E5957"/><stop offset="1" stop-color="#151B1D"/></linearGradient></defs>
-  <path d="m301 491 147-17 25 12-147 19Z" fill="#626C67" stroke="#9EA7A0" stroke-width="2"/>
-  <path d="m301 491 25 14v57l-25-15Z" fill="#202729" stroke="#78827C" stroke-width="2"/>
-  <path d="m326 505 147-19v58l-147 18Z" fill="url(#p)" stroke="#A2AAA1" stroke-width="2"/>
-  <circle cx="400" cy="525" r="27" fill="#1A2223" stroke="#808D86" stroke-width="3"/><circle cx="400" cy="525" r="19" stroke="#64716B" stroke-width="2"/>
-  <path d="m400 505 2 39m-19-17 35-4m-31-12 26 29m-4-32-18 34" stroke="#69766E" stroke-width="2"/>
-  <path d="m338 516 25-3m-25 8 25-3m-25 8 25-3" stroke="#AAB1A5" stroke-width="2"/>
-</svg>

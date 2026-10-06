@@ -1,0 +1,156 @@
+[
+  {
+    "id": "case",
+    "canvasSize": 1600,
+    "placement": [
+      480,
+      385,
+      730,
+      750
+    ],
+    "bytes": 158394,
+    "sourceSize": [
+      1254,
+      1254
+    ],
+    "sourceBounds": [
+      97,
+      81,
+      1160,
+      1177
+    ],
+    "transparentFraction": 0.33318707091056626
+  },
+  {
+    "id": "motherboard",
+    "canvasSize": 1600,
+    "placement": [
+      575,
+      500,
+      350,
+      435
+    ],
+    "bytes": 76986,
+    "sourceSize": [
+      1254,
+      1254
+    ],
+    "sourceBounds": [
+      176,
+      137,
+      998,
+      1141
+    ],
+    "transparentFraction": 0.5086568276570795
+  },
+  {
+    "id": "storage",
+    "canvasSize": 1600,
+    "placement": [
+      680,
+      875,
+      150,
+      40
+    ],
+    "bytes": 9604,
+    "sourceSize": [
+      1254,
+      1254
+    ],
+    "sourceBounds": [
+      276,
+      804,
+      978,
+      973
+    ],
+    "transparentFraction": 0.9280198102912784
+  },
+  {
+    "id": "psu",
+    "canvasSize": 1600,
+    "placement": [
+      520,
+      975,
+      365,
+      120
+    ],
+    "bytes": 19998,
+    "sourceSize": [
+      1254,
+      1254
+    ],
+    "sourceBounds": [
+      95,
+      872,
+      769,
+      1104
+    ],
+    "transparentFraction": 0.9055551740014092
+  },
+  {
+    "id": "ram",
+    "canvasSize": 1600,
+    "placement": [
+      855,
+      555,
+      52,
+      185
+    ],
+    "bytes": 10704,
+    "sourceSize": [
+      1254,
+      1254
+    ],
+    "sourceBounds": [
+      494,
+      147,
+      787,
+      1085
+    ],
+    "transparentFraction": 0.8293549954340688
+  },
+  {
+    "id": "cooler",
+    "canvasSize": 1600,
+    "placement": [
+      590,
+      464,
+      365,
+      240
+    ],
+    "bytes": 30786,
+    "sourceSize": [
+      1254,
+      1254
+    ],
+    "sourceBounds": [
+      88,
+      132,
+      1183,
+      859
+    ],
+    "transparentFraction": 0.745897657003172
+  },
+  {
+    "id": "gpu",
+    "canvasSize": 1600,
+    "placement": [
+      542,
+      770,
+      445,
+      150
+    ],
+    "bytes": 29114,
+    "sourceSize": [
+      1254,
+      1254
+    ],
+    "sourceBounds": [
+      40,
+      439,
+      1212,
+      858
+    ],
+    "transparentFraction": 0.7931842982837695
+  }
+]
