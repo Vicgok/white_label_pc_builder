@@ -5,6 +5,7 @@ import { calculateBuildTotal } from "../domain/pricing";
 import { useCases, useCaseLabels } from "../utils/catalog";
 import { BuildCard } from "../components/BuildCard";
 import { EmptyState } from "../components/ui";
+import { productConfig } from "../config/product";
 export function BuildsPage() {
   const [useCase, setUseCase] = useState("all");
   const [budget, setBudget] = useState("all");
@@ -104,7 +105,7 @@ export function BuildsPage() {
       </div>
       <div className="listing-result-count">
         {builds.length} configurations{" "}
-        <span>Sample pricing · final quotation from your retailer</span>
+        <span>{productConfig.pricingDisclaimer}</span>
       </div>
       <div className="build-grid ready-build-grid">
         {builds.map((build) => (

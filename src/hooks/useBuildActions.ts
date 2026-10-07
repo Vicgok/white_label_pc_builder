@@ -1,11 +1,9 @@
 import { useState } from "react";
-import { useBrand } from "../config/brand";
 import { useBuilderStore, snapshot } from "../store/builderStore";
-import { serializeBuild } from "../domain/build-serialization";
-import { buildText } from "../domain/enquiry";
+import { buildText, buildShareUrl } from "../domain/enquiry";
+import type { BuildSnapshot } from "../types";
 import { copyText, useToast } from "../components/ui";
-export function useBuildActions() {
-  const brand = useBrand();
+export function useBuildActions(buildOverride?: BuildSnapshot) {
   const { toast } = useToast();
   const [manualCopy, setManualCopy] = useState<string | null>(null);
   const save = () => {
@@ -17,7 +15,7 @@ export function useBuildActions() {
     }
   };
   const copy = async () => {
-    const value = buildText(snapshot(useBuilderStore.getState()), brand);
+    const value = buildText(buildOverride || snapshot(useBuilderStore.getState()));
     try {
       await copyText(value);
       toast("Configuration copied. Ready to send.");
@@ -26,17 +24,12 @@ export function useBuildActions() {
     }
   };
   const share = async () => {
-    const url = new URL("/builder", window.location.origin);
-    url.searchParams.set("brand", brand.id);
-    url.searchParams.set(
-      "shared",
-      serializeBuild(snapshot(useBuilderStore.getState())),
-    );
+    const url = buildShareUrl(buildOverride || snapshot(useBuilderStore.getState()), window.location.origin);
     try {
-      await copyText(url.toString());
+      await copyText(url);
       toast("Build link copied. Anyone with it can open this build.");
     } catch {
-      setManualCopy(url.toString());
+      setManualCopy(url);
     }
   };
   return { save, copy, share, manualCopy, setManualCopy };

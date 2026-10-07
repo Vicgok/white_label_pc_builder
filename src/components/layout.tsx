@@ -8,25 +8,23 @@ import {
   Save,
   Share2,
 } from "lucide-react";
-import { Outlet, useLocation } from "react-router-dom";
-import { useBrand } from "../config/brand";
+import { Link, Outlet, useLocation } from "react-router-dom";
+import { productConfig } from "../config/product";
 import { useBuildActions } from "../hooks/useBuildActions";
-import { BrandLink, Wordmark } from "./BrandLink";
+import { Wordmark } from "./Wordmark";
 import { useEnquiry } from "./Enquiry";
 import { Dialog } from "./ui";
 const nav = [
   ["/builder", "Build a PC"],
   ["/builds", "Ready Builds"],
   ["/components", "Components"],
-  ["/why-us", "Why Us"],
-  ["/support", "Support"],
+  ["/how-it-works", "How It Works"],
 ];
 
 export function AppLayout() {
   const location = useLocation();
-  const brand = useBrand();
   const builder = location.pathname === "/builder";
-  const { openHelp, openConfiguration } = useEnquiry();
+  const { openHelp } = useEnquiry();
   const [mobileMenu, setMobileMenu] = useState(false);
   const actions = useBuildActions();
   useEffect(() => {
@@ -34,8 +32,8 @@ export function AppLayout() {
     window.scrollTo(0, 0);
   }, [location.pathname]);
   useEffect(() => {
-    document.title = `${builder ? "Build a PC" : "Custom PCs"} | ${brand.name}`;
-  }, [brand.name, builder]);
+    document.title = `${builder ? "Build a PC" : "Custom PCs"} | ${productConfig.name}`;
+  }, [builder]);
   return (
     <div className={builder ? "builder-shell" : "marketing-shell"}>
       <a className="skip-link" href="#main-content">
@@ -60,19 +58,19 @@ export function AppLayout() {
                 </button>
                 <button
                   className="button text"
-                  aria-label="Share"
+                  aria-label="Share Build"
                   onClick={actions.share}
                 >
                   <Share2 size={16} />
-                  <span>Share</span>
+                  <span>Share Build</span>
                 </button>
                 <button
                   className="button outline"
-                  aria-label="Expert Help"
+                  aria-label="Get Help"
                   onClick={openHelp}
                 >
                   <MessageCircle size={16} />
-                  <span>Expert Help</span>
+                  <span>Get Help</span>
                 </button>
               </div>
             </>
@@ -80,7 +78,7 @@ export function AppLayout() {
             <>
               <nav className="desktop-nav" aria-label="Main navigation">
                 {nav.map(([path, label]) => (
-                  <BrandLink
+                  <Link
                     key={path}
                     to={path}
                     className={
@@ -88,19 +86,19 @@ export function AppLayout() {
                     }
                   >
                     {label}
-                  </BrandLink>
+                  </Link>
                 ))}
               </nav>
               <div className="header-actions">
                 <button className="expert-link" onClick={openHelp}>
-                  Talk to an Expert <ArrowUpRight size={14} />
+                  Get Help <ArrowUpRight size={14} />
                 </button>
-                <BrandLink
+                <Link
                   className="button primary header-start"
                   to="/builder"
                 >
                   Start Build <ArrowUpRight size={15} />
-                </BrandLink>
+                </Link>
                 <button
                   className="icon-button mobile-menu-toggle"
                   aria-label="Open navigation"
@@ -117,14 +115,14 @@ export function AppLayout() {
         <Dialog title="Explore" onClose={() => setMobileMenu(false)}>
           <nav className="mobile-nav" aria-label="Mobile navigation">
             {nav.map(([path, label]) => (
-              <BrandLink
+              <Link
                 key={path}
                 to={path}
                 onClick={() => setMobileMenu(false)}
               >
                 {label}
                 <ArrowRight size={20} />
-              </BrandLink>
+              </Link>
             ))}
           </nav>
           <button
@@ -134,7 +132,7 @@ export function AppLayout() {
               openHelp();
             }}
           >
-            Talk to an Expert
+            Get Help
           </button>
         </Dialog>
       )}
@@ -145,36 +143,35 @@ export function AppLayout() {
         <>
           <section className="configuration-cta page-width">
             <div>
-              <span className="eyebrow">GOT A PARTS LIST?</span>
-              <h2>Already have a configuration?</h2>
-              <p>Turn your wishlist into a clear quotation.</p>
+              <span className="eyebrow">YOUR BUILD. YOUR CHOICE.</span>
+              <h2>Take your configuration anywhere.</h2>
+              <p>Build a parts list to share with your preferred PC retailer.</p>
             </div>
-            <button className="button secondary" onClick={openConfiguration}>
-              Get a quote <ArrowUpRight size={18} />
-            </button>
+            <Link className="button secondary" to="/builder">
+              Start Build <ArrowUpRight size={18} />
+            </Link>
           </section>
           <footer className="footer">
             <div className="page-width footer-main">
               <div>
                 <Wordmark />
-                <p>{brand.tagline}</p>
+                <p>{productConfig.footer.line}</p>
               </div>
               <div className="footer-links">
-                <BrandLink to="/builder">Build a PC</BrandLink>
-                <BrandLink to="/builds">Ready Builds</BrandLink>
-                <BrandLink to="/support">Support</BrandLink>
+                <Link to="/builder">Build a PC</Link>
+                <Link to="/builds">Ready Builds</Link>
+                <Link to="/how-it-works">How It Works</Link>
+                <Link to="/for-retailers">For Retailers</Link>
               </div>
               <span className="footer-note">
-                A custom PC, built around you.
-                <br />
-                <small>Retailer preview · sample prices & configurations</small>
+                <small>{productConfig.footer.disclaimer}</small>
               </span>
             </div>
             <div className="page-width footer-bottom">
               <span>
-                © {new Date().getFullYear()} {brand.name}
+                © {new Date().getFullYear()} {productConfig.name}
               </span>
-              <span>Every great build starts with a conversation.</span>
+              <span>{productConfig.tagline}</span>
             </div>
           </footer>
         </>

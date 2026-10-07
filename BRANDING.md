@@ -1,28 +1,11 @@
-# Add or personalize a retailer
+# RigPilot product identity
 
-All retailer content lives in `src/config/brands.ts`. Generic UI components obtain it through `useBrand()` and semantic theme variables.
+The application is one retailer-neutral product. All identity, positioning, hero copy, accent colors, guidance steps and pricing disclaimers live in `src/config/product.ts` as `productConfig`.
 
-1. Copy an existing `BrandConfig` entry under a new key matching its `id`.
-2. Set name, short name, tagline, theme colors, hero copy and trust points. Use dark primary colors for readable white button text.
-3. Add only verified contact information, locations and service claims. Omit unknown fields. WhatsApp must include the country code; an empty number hides all WhatsApp actions. Instagram accepts a handle or HTTPS profile URL.
-4. Optionally put a logo in `public/` and set `logo: '/your-logo.svg'`. Without a logo, the configured short name renders as a wordmark.
-5. Copy `.env.example` to `.env.local` and set `VITE_ACTIVE_BRAND=mybrand`. Restart Vite after changing environment variables; production variables are applied at build time.
+Components read this single configuration. The wordmark renders its product name as text with a small CSS mark, without an external logo. Marketing uses the existing light neutral palette and the builder keeps its dark neutral workspace.
 
-No generic component edits are needed. The development `/demo` switcher automatically includes the new entry.
+Deploy once with `npm run build` and share the same public URL with every prospect. There is no active retailer selector, retailer query requirement, contact setup or demo theme switcher. Shared build URLs contain only the existing versioned build payload.
 
-Preview with `/?brand=mybrand`. The query overrides the environment setting, which overrides the default (`byos`). Invalid brand IDs show a small notice and the fallback retailer. Internal navigation and shared build links preserve branding.
+RigPilot provides configurations and illustrative estimates. A preferred retailer confirms live prices, availability, assembly and warranty terms. Copy Build and Share Build make configurations portable; Request a Quote provides these actions without a backend.
 
-Example fields to add to **your verified brand entry**:
-
-```ts
-contact: {
-  whatsapp: 'COUNTRY_CODE_AND_VERIFIED_NUMBER', // replace with digits, no placeholder in a public demo
-  phone: 'VERIFIED_PHONE_NUMBER',
-  email: 'VERIFIED_EMAIL',
-  instagram: 'VERIFIED_HANDLE',
-  address: 'VERIFIED_ADDRESS',
-},
-locations: [{ name: 'VERIFIED_STORE_NAME', address: 'VERIFIED_ADDRESS' }],
-```
-
-The supplied retailer names come from the project brief. Colors and copy are preview choices, not assertions about official brand guidelines. Default trust copy describes configurator guidance; assembly, stress testing, warranty and service commitments require retailer confirmation before being published as claims.
+Future retailer integration can be added as a separate store experience. No tenant infrastructure is implemented in this prototype.

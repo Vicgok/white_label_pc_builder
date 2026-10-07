@@ -1,6 +1,6 @@
 import { Component, useEffect, type ReactNode } from "react";
-import { BrowserRouter, Route, Routes, useLocation } from "react-router-dom";
-import { BrandContext, resolveBrand } from "../config/brand";
+import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
+import { productConfig } from "../config/product";
 import { ToastProvider } from "../components/ui";
 import { EnquiryProvider } from "../components/Enquiry";
 import { AppLayout } from "../components/layout";
@@ -10,47 +10,37 @@ import { BuildsPage } from "../pages/BuildsPage";
 import { BuildDetailPage } from "../pages/BuildDetailPage";
 import { ComponentsPage } from "../pages/ComponentsPage";
 import {
-  DemoPage,
+  ForRetailersPage,
   NotFoundPage,
   SupportPage,
-  WhyUsPage,
+  HowItWorksPage,
 } from "../pages/InfoPages";
-function BrandedApp() {
-  const location = useLocation();
-  const { brand, missing } = resolveBrand(location.search);
+function ProductApp() {
   useEffect(() => {
     const root = document.documentElement;
-    root.style.setProperty("--brand-primary", brand.theme.primary);
-    root.style.setProperty("--brand-primary-hover", brand.theme.primaryHover);
-    root.style.setProperty("--brand-primary-soft", brand.theme.primarySoft);
-  }, [brand]);
+    root.style.setProperty("--brand-primary", productConfig.theme.primary);
+    root.style.setProperty("--brand-primary-hover", productConfig.theme.primaryHover);
+    root.style.setProperty("--brand-primary-soft", productConfig.theme.primarySoft);
+  }, []);
   return (
-    <BrandContext.Provider value={brand}>
-      <ToastProvider>
-        <EnquiryProvider>
-          {missing && (
-            <div className="brand-fallback" role="status">
-              Brand “{missing}” is not configured. Showing {brand.name}.
-            </div>
-          )}
-          <Routes>
-            <Route element={<AppLayout />}>
-              <Route index element={<HomePage />} />
-              <Route path="builder" element={<BuilderPage />} />
-              <Route path="builds" element={<BuildsPage />} />
-              <Route path="builds/:slug" element={<BuildDetailPage />} />
-              <Route path="components" element={<ComponentsPage />} />
-              <Route path="why-us" element={<WhyUsPage />} />
-              <Route path="support" element={<SupportPage />} />
-              {import.meta.env.DEV && (
-                <Route path="demo" element={<DemoPage />} />
-              )}
-              <Route path="*" element={<NotFoundPage />} />
-            </Route>
-          </Routes>
-        </EnquiryProvider>
-      </ToastProvider>
-    </BrandContext.Provider>
+    <ToastProvider>
+      <EnquiryProvider>
+        <Routes>
+          <Route element={<AppLayout />}>
+            <Route index element={<HomePage />} />
+            <Route path="builder" element={<BuilderPage />} />
+            <Route path="builds" element={<BuildsPage />} />
+            <Route path="builds/:slug" element={<BuildDetailPage />} />
+            <Route path="components" element={<ComponentsPage />} />
+            <Route path="how-it-works" element={<HowItWorksPage />} />
+            <Route path="why-us" element={<Navigate to="/how-it-works" replace />} />
+            <Route path="support" element={<SupportPage />} />
+            <Route path="for-retailers" element={<ForRetailersPage />} />
+            <Route path="*" element={<NotFoundPage />} />
+          </Route>
+        </Routes>
+      </EnquiryProvider>
+    </ToastProvider>
   );
 }
 class ErrorBoundary extends Component<
@@ -82,7 +72,7 @@ export function App() {
   return (
     <ErrorBoundary>
       <BrowserRouter>
-        <BrandedApp />
+        <ProductApp />
       </BrowserRouter>
     </ErrorBoundary>
   );

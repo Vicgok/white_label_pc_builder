@@ -4,7 +4,7 @@ import { components } from "../data/components";
 import { categories, type ComponentCategory } from "../types";
 import { categoryLabels, componentSpecs } from "../utils/catalog";
 import { money } from "../domain/pricing";
-import { BrandLink } from "../components/BrandLink";
+import { Link } from "react-router-dom";
 import { PartVisual } from "../components/HardwareVisual";
 import { EmptyState } from "../components/ui";
 export function ComponentsPage() {
@@ -64,12 +64,12 @@ export function ComponentsPage() {
             <p>{componentSpecs(part)}</p>
             <div>
               <strong>{money(part.price)}</strong>
-              <BrandLink
+              <Link
                 className="button text"
                 to={`/builder?category=${category}`}
               >
                 Explore in builder <ArrowUpRight size={15} />
-              </BrandLink>
+              </Link>
             </div>
           </article>
         ))}

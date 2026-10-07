@@ -29,7 +29,6 @@ import {
   componentSpecs,
   useCases,
 } from "../utils/catalog";
-import { useBrandPath } from "../components/BrandLink";
 import { categoryIcons, PartVisual } from "../components/HardwareVisual";
 import { BuildSummary } from "../components/builder/BuildSummary";
 import { Onboarding } from "../components/builder/Onboarding";
@@ -79,7 +78,6 @@ export function BuilderPage() {
   const build = useBuilderStore();
   const location = useLocation();
   const navigate = useNavigate();
-  const brandPath = useBrandPath();
   const initialized = useRef("");
   const { toast } = useToast();
   const [category, setCategory] = useState<ComponentCategory>("cpu");
@@ -105,7 +103,7 @@ export function BuilderPage() {
       if (parsed) {
         useBuilderStore.getState().loadBuild(parsed);
         toast(`Shared build ${parsed.buildId} loaded.`);
-        navigate(brandPath("/builder"), { replace: true });
+        navigate("/builder", { replace: true });
       } else
         setInvalid(
           "This shared build link is invalid or uses parts that are no longer in the sample catalog. Your current build is safe.",
@@ -123,7 +121,7 @@ export function BuilderPage() {
             selectedComponents: preset.components,
             savedAt: null,
           });
-        navigate(brandPath("/builder"), { replace: true });
+        navigate("/builder", { replace: true });
       } else
         setInvalid(
           "That ready build could not be found. Start a new build or continue your draft.",
@@ -142,13 +140,13 @@ export function BuilderPage() {
         budget <= 1000000
       )
         state.setBudget(budget);
-      navigate(brandPath("/builder"), { replace: true });
+      navigate("/builder", { replace: true });
     }
     const requestedCategory = params.get("category");
     if (categories.includes(requestedCategory as ComponentCategory)) {
       setCategory(requestedCategory as ComponentCategory);
       useBuilderStore.getState().startBuild();
-      navigate(brandPath("/builder"), { replace: true });
+      navigate("/builder", { replace: true });
     }
   }, [location.search, toast]);
   const selectCategory = (next: ComponentCategory, onlyCompatible = false) => {
@@ -162,7 +160,7 @@ export function BuilderPage() {
   };
   const adjust = () => {
     useBuilderStore.setState({ started: false });
-    navigate(brandPath("/builder"), { replace: true });
+    navigate("/builder", { replace: true });
   };
   const parts = resolveParts(build.selectedComponents);
   const validation = validateBuild(parts);
@@ -264,7 +262,7 @@ export function BuilderPage() {
             className="button outline"
             onClick={() => {
               setInvalid("");
-              navigate(brandPath("/builder"), { replace: true });
+              navigate("/builder", { replace: true });
             }}
           >
             Continue building
@@ -294,7 +292,7 @@ export function BuilderPage() {
                 onClick={() => {
                   build.resetBuild();
                   setExplanation("");
-                  navigate(brandPath("/builder"), { replace: true });
+                  navigate("/builder", { replace: true });
                 }}
               >
                 Start over

@@ -8,6 +8,7 @@ import {
   TriangleAlert,
 } from "lucide-react";
 import { useBuilderStore } from "../../store/builderStore";
+import { productConfig } from "../../config/product";
 import { categories, type ComponentCategory } from "../../types";
 import { resolveParts } from "../../data/components";
 import { validateBuild } from "../../domain/compatibility";
@@ -17,7 +18,6 @@ import { estimateSuitability } from "../../domain/suitability";
 import { categoryLabels, useCaseLabels } from "../../utils/catalog";
 import { useBuildActions } from "../../hooks/useBuildActions";
 import { useEnquiry } from "../Enquiry";
-import { Dialog } from "../ui";
 export function BuildSummary({
   onCategory,
   onGetBuild,
@@ -33,7 +33,7 @@ export function BuildSummary({
   const actions = useBuildActions();
   const { openQuote } = useEnquiry();
   return (
-    <section className="build-summary" aria-label="Your build summary">
+    <section className={`build-summary${actions.manualCopy ? " has-manual-copy" : ""}`} aria-label="Your build summary">
       <div className="summary-heading">
         <div>
           <span className="eyebrow">YOUR BUILD</span>
@@ -159,7 +159,7 @@ export function BuildSummary({
         <div className="summary-total">
           <span>ESTIMATED TOTAL</span>
           <strong aria-live="polite">{money(total)}</strong>
-          <small>Sample prices · no peripherals or OS included</small>
+          <small>{productConfig.pricingDisclaimer} No peripherals or OS included.</small>
           {total > build.budget && (
             <p className="warning-text">
               {money(total - build.budget)} over your {money(build.budget)}{" "}
@@ -169,25 +169,26 @@ export function BuildSummary({
         </div>
         <button
           className="button primary full"
+          onClick={actions.copy}
+        >
+          <Copy size={17} /> Copy Build
+        </button>
+        <button className="button outline full" onClick={actions.share}>
+          <Share2 size={17} /> Share Build
+        </button>
+        <button
+          className="button text full"
           onClick={() => {
             onGetBuild?.();
             openQuote();
           }}
         >
-          Get This Build <ChevronRight size={17} />
+          Request a Quote <ChevronRight size={17} />
         </button>
         <div className="summary-actions">
           <button onClick={actions.save}>
             <Save size={14} />
             Save
-          </button>
-          <button onClick={actions.copy}>
-            <Copy size={14} />
-            Copy Build
-          </button>
-          <button onClick={actions.share}>
-            <Share2 size={14} />
-            Share
           </button>
         </div>
         {build.savedAt && (
@@ -198,21 +199,16 @@ export function BuildSummary({
         )}
       </div>
       {actions.manualCopy && (
-        <Dialog
-          dark
-          title="Copy your build"
-          onClose={() => actions.setManualCopy(null)}
-        >
-          <label>
-            Copy this text
+          <label className="manual-copy">
+            Your browser cannot copy automatically. Select and copy below.
             <textarea
+              autoFocus
               rows={8}
               readOnly
               value={actions.manualCopy}
               onFocus={(event) => event.target.select()}
             />
           </label>
-        </Dialog>
       )}
     </section>
   );

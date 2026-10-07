@@ -10,12 +10,13 @@ import {
   useCaseLabels,
 } from "../utils/catalog";
 import { categories } from "../types";
-import { BrandLink } from "../components/BrandLink";
+import { Link } from "react-router-dom";
 import { PcVisual } from "../components/HardwareVisual";
 import { ProductCallouts } from "../components/ProductCallouts";
 import { useEnquiry } from "../components/Enquiry";
 import { newBuildId } from "../store/builderStore";
 import { EmptyState } from "../components/ui";
+import { productConfig } from "../config/product";
 export function BuildDetailPage() {
   const { slug } = useParams();
   const build = readyBuilds.find((build) => build.slug === slug);
@@ -27,9 +28,9 @@ export function BuildDetailPage() {
           title="This build is not in the catalog."
           description="Explore one of our current sample configurations."
         >
-          <BrandLink className="button primary" to="/builds">
+          <Link className="button primary" to="/builds">
             Explore Ready Builds
-          </BrandLink>
+          </Link>
         </EmptyState>
       </div>
     );
@@ -37,10 +38,10 @@ export function BuildDetailPage() {
   const total = calculateBuildTotal(build.components);
   return (
     <div className="page-width detail-page">
-      <BrandLink to="/builds" className="back-link">
+      <Link to="/builds" className="back-link">
         <ArrowLeft size={16} />
         All Ready Builds
-      </BrandLink>
+      </Link>
       <div className="detail-hero">
         <div className="detail-visual">
           <PcVisual priority />
@@ -58,15 +59,15 @@ export function BuildDetailPage() {
           </div>
           <strong className="detail-price">{money(total)}</strong>
           <small className="price-disclaimer">
-            Estimated sample price · final quotation to be confirmed
+            {productConfig.pricingDisclaimer}
           </small>
           <div className="detail-actions">
-            <BrandLink
+            <Link
               className="button primary"
               to={`/builder?build=${build.slug}`}
             >
               Customize this Build <ArrowUpRight size={17} />
-            </BrandLink>
+            </Link>
             <button
               className="button secondary"
               onClick={() =>
@@ -80,7 +81,7 @@ export function BuildDetailPage() {
                 })
               }
             >
-              Get Quote
+              Request a Quote
             </button>
           </div>
           <span className="status-success">
@@ -143,12 +144,12 @@ export function BuildDetailPage() {
         <section>
           <h2>Room to grow.</h2>
           <p>{build.upgrade}</p>
-          <BrandLink
+          <Link
             to={`/builder?build=${build.slug}`}
             className="button text"
           >
             Explore your options <ArrowUpRight size={17} />
-          </BrandLink>
+          </Link>
         </section>
       </div>
     </div>

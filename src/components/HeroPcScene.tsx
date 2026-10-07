@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { ArrowRight, ArrowUpRight } from "lucide-react";
-import { BrandLink } from "./BrandLink";
+import { Link } from "react-router-dom";
+import { productConfig } from "../config/product";
 import { calculateBuildTotal, money } from "../domain/pricing";
 import { serializeBuild } from "../domain/build-serialization";
 import { resolveParts } from "../data/components";
@@ -45,7 +46,7 @@ const mobileMotion: Record<LayerId, Motion> = {
 const clamp = (value: number) => Math.min(1, Math.max(0, value));
 const range = (value: number, start: number, end: number) => clamp((value - start) / (end - start));
 
-export function HeroPcScene({ title }: { trustPoints: string[]; title: string }) {
+export function HeroPcScene() {
   const sectionRef = useRef<HTMLElement>(null);
   const [viewport, setViewport] = useState(() => ({
     mobile: window.matchMedia("(max-width: 767px)").matches,
@@ -129,12 +130,12 @@ export function HeroPcScene({ title }: { trustPoints: string[]; title: string })
       <div className="hero-pc-sticky">
         <div className="hero-pc-layout page-width">
           <div className="hero-pc-copy">
-            <span className="eyebrow">CUSTOM PC BUILDING</span>
-            <h1>{title.split("\n").map((line, index) => <span key={line} className={index === 0 ? "hero-pc-heading-lead" : ""}>{line}{index === 0 && <br />}</span>)}</h1>
-            <p>Tell us your budget and what you use your PC for. We'll help you create a balanced, compatible build around your needs.</p>
+            <span className="eyebrow">{productConfig.hero.eyebrow}</span>
+            <h1>{productConfig.hero.title.split("\n").map((line, index) => <span key={line} className={index === 0 ? "hero-pc-heading-lead" : ""}>{line}{index === 0 && <br />}</span>)}</h1>
+            <p>{productConfig.hero.description}</p>
             <div className="hero-actions">
-              <BrandLink to="/builder" className="button primary">Build My PC <ArrowUpRight size={18} /></BrandLink>
-              <BrandLink to="/builds" className="button text">Explore Ready Builds <ArrowRight size={17} /></BrandLink>
+              <Link to="/builder" className="button primary">Build My PC <ArrowUpRight size={18} /></Link>
+              <Link to="/builds" className="button text">Explore Ready Builds <ArrowRight size={17} /></Link>
             </div>
             <span className="hero-pc-scroll-hint">SCROLL TO EXPLORE</span>
           </div>
@@ -155,7 +156,7 @@ export function HeroPcScene({ title }: { trustPoints: string[]; title: string })
             </ul>
             <div className="hero-pc-final-bottom">
               <div><strong>{money(heroBuild.price)}</strong><small>Sample price · final quote confirmed by retailer</small></div>
-              <BrandLink to={customizeUrl} className="button primary">Customize Build <ArrowUpRight size={16} /></BrandLink>
+              <Link to={customizeUrl} className="button primary">Customize Build <ArrowUpRight size={16} /></Link>
             </div>
           </section>
         </div>

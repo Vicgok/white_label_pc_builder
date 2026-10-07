@@ -1,8 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { componentById, getComponents, resolveParts } from "../data/components";
 import { readyBuilds } from "../data/builds";
-import { resolveBrand } from "../config/brand";
-import { brands } from "../config/brands";
+import { productConfig } from "../config/product";
 import {
   checkCpuMotherboardCompatibility,
   checkMemoryCompatibility,
@@ -19,7 +18,7 @@ import {
   deserializeBuild,
   isBuildSnapshot,
 } from "./build-serialization";
-import { buildText, whatsappUrl } from "./enquiry";
+import { buildText, buildShareUrl } from "./enquiry";
 import { estimateSuitability } from "./suitability";
 import { useCases } from "../utils/catalog";
 import type { BuildSnapshot } from "../types";
@@ -210,7 +209,7 @@ describe("recommendation and pricing", () => {
   });
 });
 
-describe("sharing, brands and enquiries", () => {
+describe("sharing and portable configurations", () => {
   it("round-trips IDs, parts and context", () => {
     expect(deserializeBuild(serializeBuild(snapshot))).toEqual(snapshot);
   });
@@ -244,27 +243,33 @@ describe("sharing, brands and enquiries", () => {
       false,
     );
   });
-  it("resolves query before environment, then default; invalid brand is explicit", () => {
-    expect(resolveBrand("?brand=satnam", "itfixer").brand.id).toBe("satnam");
-    expect(resolveBrand("", "itfixer").brand.id).toBe("itfixer");
-    expect(resolveBrand("", "").brand.id).toBe("byos");
-    expect(resolveBrand("?brand=unknown", "itfixer").missing).toBe("unknown");
-  });
-  it("generates complete enquiries with configured WhatsApp only", () => {
-    const message = buildText(snapshot, brands.satnam);
-    expect(message).toContain("Hi Satnam Computers,");
-    expect(message).toContain("PC-7F42");
+  it("generates a portable configuration with context, power and compatibility", () => {
+    const message = buildText(snapshot);
+    expect(message).toContain(`${productConfig.name} Build\nBuild ID: PC-7F42`);
     expect(message).toContain("Ryzen 7 9700X");
+    expect(message).toContain("Use case: Gaming");
     expect(message).toContain("Target: 1440p");
-    expect(message).toContain("sample pricing");
-    expect(whatsappUrl(brands.satnam, message)).toBeNull();
-    // A reserved fictional test number; never added to retailer configuration.
-    const testBrand = {
-      ...brands.satnam,
-      contact: { whatsapp: "+1 (202) 555-0142" },
-    };
-    expect(whatsappUrl(testBrand, message)).toBe(
-      `https://wa.me/12025550142?text=${encodeURIComponent(message)}`,
-    );
+    for (const label of ["CPU", "GPU", "Motherboard", "Memory", "Storage", "Cooling", "PSU", "Case"]) expect(message).toContain(`${label}: `);
+    expect(message).toContain(`Estimated total: ₹${calculateBuildTotal(snapshot.selectedComponents).toLocaleString("en-IN")}`);
+    expect(message).toContain(`Estimated system power: ${estimatePower(parts).estimatedPower}W`);
+    expect(message).toContain(`Recommended PSU: ${estimatePower(parts).recommendedPsuWattage}W+`);
+    expect(message).toContain("All selected components are compatible.");
+    expect(message).toContain(productConfig.pricingDisclaimer);
+    expect(message).toContain(`Generated with ${productConfig.name}.`);
+  });
+  it("reports incomplete and incompatible builds honestly in copied text", () => {
+    const incomplete = buildText({ ...snapshot, selectedComponents: { cpu: "r7-9700x" } });
+    expect(incomplete).toContain("GPU: Integrated graphics");
+    expect(incomplete).toContain("Missing: Motherboard.");
+    expect(incomplete).not.toContain("All selected components are compatible.");
+    const incompatible = buildText({ ...snapshot, selectedComponents: { ...selected, cpu: "r5-5600" } });
+    expect(incompatible).toContain("CPU socket mismatch:");
+    expect(incompatible).not.toContain("All selected components are compatible.");
+  });
+  it("creates brand-free links that reconstruct all build data", () => {
+    const url = new URL(buildShareUrl(snapshot, "https://example.com"));
+    expect(url.pathname).toBe("/builder");
+    expect([...url.searchParams.keys()]).toEqual(["shared"]);
+    expect(deserializeBuild(url.searchParams.get("shared")!)).toEqual(snapshot);
   });
 });

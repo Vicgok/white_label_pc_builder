@@ -1,6 +1,6 @@
-# Custom PC Builder
+# RigPilot
 
-A reusable retailer sales prototype: choose a workload and budget, get a deterministic recommendation, customize parts, review compatibility and prepare a structured enquiry. React, TypeScript, Vite, Tailwind CSS, React Router and Zustand. No backend, checkout or live inventory.
+One retailer-neutral custom PC configuration prototype: choose a workload and budget, get a deterministic recommendation, customize parts, review compatibility and prepare a structured enquiry. React, TypeScript, Vite, Tailwind CSS, React Router and Zustand. No backend, checkout or live inventory.
 
 ## Run
 
@@ -25,15 +25,17 @@ npx playwright install chromium
 npm run test:browser
 ```
 
-## Brand previews
+## One product, one deployment
 
-Use `/?brand=byos`, `satnam`, `jaicomputech`, `microcenter`, `computergarage360` or `itfixer`. Query overrides `VITE_ACTIVE_BRAND`, then the app defaults to `byos`. Brand choice follows internal links. `/demo` offers a switcher **during development only**. See [BRANDING.md](BRANDING.md).
+RigPilot uses one centralized product configuration in `src/config/product.ts`. No retailer environment variable, query parameter, logo or contact setup is required. The same production URL serves every prospect. See [BRANDING.md](BRANDING.md).
 
-Routes: `/`, `/builder`, `/builds`, `/builds/:slug`, `/components`, `/why-us`, `/support`; unknown routes have an intentional fallback. Static hosting must rewrite application routes to `index.html`.
+Routes: `/`, `/builder`, `/builds`, `/builds/:slug`, `/components`, `/how-it-works`, `/support`, `/for-retailers`. The former `/why-us` route redirects to How It Works. Unknown routes have an intentional fallback.
+
+Deploy the standard `npm run build` output in `dist/`. Static hosting must rewrite application routes to `index.html`; the included `vercel.json` provides this for Vercel. No backend or retailer-specific production configuration is needed.
 
 ## Where things live
 
-- `src/config/`: typed brand configuration and resolution.
+- `src/config/`: centralized product identity, copy and accent theme.
 - `src/data/`: 54 illustrative components and four ready configurations. Edit these local files to replace catalog data and prices.
 - `src/domain/`: framework-independent compatibility, recommendation, power, pricing, suitability, serialization and enquiry logic.
 - `src/store/`: persisted Zustand builder draft and explicit device-local save.
@@ -47,9 +49,9 @@ Power = modeled CPU allowance + GPU board power + 70W. Recommended PSU adds 25% 
 
 Recommendations compare compatible CPU/GPU/memory/storage combinations, choosing inexpensive compatible supporting parts. Workload weights favor GPU performance for gaming, CPU/RAM for editing, NVIDIA VRAM for local AI, and integrated graphics/value for office use. Results stay within budget; an insufficient budget returns a clear minimum-budget action. Suitability labels are heuristics, with no fabricated benchmarks or FPS claims.
 
-Drafts survive refresh. Saved builds, context, reference IDs and timestamps stay in LocalStorage. Shared links contain a validated, versioned parts/context payload plus brand ID. Incoming preset/share context is consumed once so refresh preserves subsequent edits. Share and copy use the clipboard with manual-copy fallback.
+Drafts survive refresh. Saved builds, context, reference IDs and timestamps stay in LocalStorage. Shared links contain a validated, versioned parts/context payload without retailer identity. Incoming preset/share context is consumed once so refresh preserves subsequent edits. Share and copy use the clipboard with manual-copy fallback.
 
-All retailer contacts start empty. WhatsApp buttons appear only when a number is configured; messages include reference, all chosen parts, sample total, workload and resolution. Quote/callback forms demonstrate a **local success state**, explicitly confirming nothing was sent. Screenshot intake stores only a filename, without uploading or OCR.
+Copy Build produces a portable parts list with workload, target, estimated price, system power and compatibility notices. Share Build copies a link that reconstructs the configuration. Request a Quote explains how to take the build to a preferred retailer, with Copy Build and Copy Share Link actions. No personal contact information is collected, and there is no backend quotation submission. Get Help explains the guided configuration flow.
 
 PC and hardware imagery uses locally stored, generated photorealistic studio images: graphite metal, tempered glass, neutral backgrounds, physically grounded shadows and restrained white lighting. Ten optimized JPEG assets live in `public/images/products/`; their mapping is in `src/config/product-images.ts`. Air and liquid coolers have separate images. Images are representative, not verified photographs of exact SKUs; an optional `image` field on each catalog component can supply its real product photo. Generation prompts and provenance are in [docs/product-image-prompts.md](docs/product-image-prompts.md). No runtime image-generation service or external image dependency is used.
 
