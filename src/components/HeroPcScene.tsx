@@ -6,20 +6,35 @@ import { prefetch3DDemo } from './PreviewFlagship';
 import { ThreeDLoadingState } from './three/ThreeDLoadingState';
 import { PreviewUnavailable } from './three/Loading3D';
 import type { HeroScrollState } from '../domain/three/homepage-explosion';
+import { PREVIEW_MOBILE_QUERY } from '../domain/three/render-quality';
 import './HeroPcScene.css';
+import { MobilePcHero } from './MobilePcHero';
 
 const loadHero = () => import('./three/HeroPc3D');
 const clamp = (value: number) => Math.min(1, Math.max(0, value));
 
 export function HeroPcScene() {
+  const [mobile, setMobile] = useState(() => window.matchMedia(PREVIEW_MOBILE_QUERY).matches);
+  useEffect(() => {
+    const query = window.matchMedia(PREVIEW_MOBILE_QUERY);
+    const update = () => setMobile(query.matches);
+    query.addEventListener('change', update);
+    return () => query.removeEventListener('change', update);
+  }, []);
+  // The desktop lazy component is never rendered/imported by the mobile hero.
+  return mobile ? <MobilePcHero /> : <DesktopPcHero />;
+}
+
+function DesktopPcHero() {
   const sectionRef = useRef<HTMLElement>(null);
+  const sceneRef = useRef<HTMLDivElement>(null);
   const scroll = useRef<HeroScrollState>({ progress: 0, active: false });
   const [active, setActive] = useState(false);
   const [attempt, setAttempt] = useState(0);
   const [ready, setReady] = useState(false);
   const [viewport, setViewport] = useState(() => ({
-    mobile: window.matchMedia('(max-width: 767px)').matches,
-    tablet: window.matchMedia('(min-width: 768px) and (max-width: 1023px)').matches,
+    mobile: window.matchMedia(PREVIEW_MOBILE_QUERY).matches,
+    tablet: window.matchMedia('(min-width: 769px) and (max-width: 1023px)').matches,
     reduced: window.matchMedia('(prefers-reduced-motion: reduce)').matches,
   }));
   const Scene = useMemo(() => lazy(loadHero), [attempt]);
@@ -29,7 +44,7 @@ export function HeroPcScene() {
     const section = sectionRef.current!;
     const stories = Array.from(section.querySelectorAll<HTMLElement>('[data-story]'));
     const indicator = section.querySelector<HTMLElement>('.hero-pc-story-progress')!;
-    const media = [window.matchMedia('(max-width: 767px)'), window.matchMedia('(min-width: 768px) and (max-width: 1023px)'), window.matchMedia('(prefers-reduced-motion: reduce)')];
+    const media = [window.matchMedia(PREVIEW_MOBILE_QUERY), window.matchMedia('(min-width: 769px) and (max-width: 1023px)'), window.matchMedia('(prefers-reduced-motion: reduce)')];
     let frame = 0, top = 0, travel = 1, currentStage = -1;
     const draw = () => {
       frame = 0;
@@ -75,14 +90,14 @@ export function HeroPcScene() {
     let paint = 0;
     const observer = new IntersectionObserver(entries => {
       scroll.current.active = entries.some(entry => entry.isIntersecting);
+      setActive(scroll.current.active); // Release the renderer when the visual leaves the viewport.
       if (scroll.current.active) {
-        setActive(true);
         scroll.current.invalidate?.();
       }
     });
     // Keep the first paint and primary CTA independent of the Three.js chunk.
     const first = requestAnimationFrame(() => {
-      paint = requestAnimationFrame(() => { if (sectionRef.current) observer.observe(sectionRef.current); });
+      paint = requestAnimationFrame(() => { if (sceneRef.current) observer.observe(sceneRef.current); });
     });
     return () => { cancelAnimationFrame(first); cancelAnimationFrame(paint); observer.disconnect(); scroll.current.active = false; };
   }, []);
@@ -113,7 +128,7 @@ export function HeroPcScene() {
           <span className="hero-pc-story-progress" aria-hidden="true">01 / {String(stages.length).padStart(2, '0')} — Build</span>
         </div>
         <div className="hero-pc-visual">
-          <div className="hero-pc-scene" data-ready={ready} role="group" aria-label="Three-dimensional custom PC; the case opens before its components separate as you scroll">
+          <div ref={sceneRef} className="hero-pc-scene" data-ready={ready} role="group" aria-label="Three-dimensional custom PC; the case opens before its components separate as you scroll">
             {!active && <ThreeDLoadingState compact label="Preparing interactive 3D…" />}
             {active && <HeroBoundary key={attempt} onRetry={() => { setReady(false); setAttempt(value => value + 1); }}>
               <Suspense fallback={<ThreeDLoadingState compact label="Preparing interactive 3D…" />}>

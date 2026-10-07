@@ -8,6 +8,7 @@ import { MODEL_URL, type CameraRequest, type PreviewPart } from '../../domain/th
 import { emitPreviewEvent } from '../../domain/three/preview-events';
 import { useMedia, usePreviewAsset } from './usePreviewAsset';
 import { calculateBuildTotal, money } from '../../domain/pricing';
+import { PREVIEW_MOBILE_QUERY, previewQuality } from '../../domain/three/render-quality';
 import { PcCanvas } from './PcCanvas';
 import { PartsPanel } from './PartsPanel';
 import { SelectedPartPanel } from './SelectedPartPanel';
@@ -37,7 +38,7 @@ export default function Pc3DPreview({ onEditPart, onParts, initialPart = null, o
   const [fullscreenError, setFullscreenError] = useState('');
   const [request, setRequest] = useState<CameraRequest>({ sequence: 0, kind: 'reset' });
   const container = useRef<HTMLDivElement>(null);
-  const mobile = useMedia('(max-width: 767px)');
+  const quality = previewQuality(useMedia(PREVIEW_MOBILE_QUERY));
   const reducedMotion = useMedia('(prefers-reduced-motion: reduce)');
   useEffect(() => { emitPreviewEvent({ name: '3d_preview_opened', source: 'builder' }); }, []);
   useEffect(() => {
@@ -87,7 +88,7 @@ export default function Pc3DPreview({ onEditPart, onParts, initialPart = null, o
           <PreviewErrorBoundary key={attempt} onRetry={retry} onParts={onParts}>
             {failed ? <PreviewUnavailable onRetry={retry} onParts={onParts} /> : !manifest ? <Loading3D /> :
               <PcCanvas manifest={manifest} explode={explode} hideGlass={hideGlass} selected={selected}
-                warnings={warnings} reducedMotion={reducedMotion} mobile={mobile} request={request} ready={ready}
+                warnings={warnings} reducedMotion={reducedMotion} quality={quality} request={request} ready={ready}
                 visibleParts={visibleParts} onReady={setReady} onSelect={select} onRetry={retry} onParts={onParts} />}
           </PreviewErrorBoundary>
         </div>

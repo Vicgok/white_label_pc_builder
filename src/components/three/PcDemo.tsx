@@ -8,6 +8,7 @@ import { PcCanvas } from './PcCanvas';
 import { ViewerToolbar } from './ViewerToolbar';
 import { PreviewErrorBoundary, PreviewUnavailable } from './Loading3D';
 import { AssetLoadingState as Loading3D } from './AssetLoadingState';
+import { PREVIEW_MOBILE_QUERY, previewQuality } from '../../domain/three/render-quality';
 import './Pc3DPreview.css';
 
 useGLTF.preload(MODEL_URL);
@@ -19,7 +20,7 @@ export default function PcDemo({ onClose }: { onClose: () => void }) {
   const [glass, setGlass] = useState(false);
   const [selected, setSelected] = useState<PreviewPart | null>(null);
   const [request, setRequest] = useState<CameraRequest>({ sequence: 0, kind: 'reset' });
-  const mobile = useMedia('(max-width: 767px)');
+  const quality = previewQuality(useMedia(PREVIEW_MOBILE_QUERY));
   const reducedMotion = useMedia('(prefers-reduced-motion: reduce)');
   useEffect(() => { emitPreviewEvent({ name: '3d_preview_opened', source: 'homepage' }); }, []);
   const select = (part: PreviewPart) => {
@@ -30,7 +31,7 @@ export default function PcDemo({ onClose }: { onClose: () => void }) {
       <PreviewErrorBoundary key={attempt} onRetry={retry} onParts={onClose} returnLabel="Back to demo" description="You can continue configuring your PC in the builder.">
         {failed ? <PreviewUnavailable onRetry={retry} description="You can continue configuring your PC in the builder." /> : !manifest ? <Loading3D /> :
           <PcCanvas manifest={manifest} explode={explode} hideGlass={glass} selected={selected} warnings={noWarnings}
-            reducedMotion={reducedMotion} mobile={mobile} request={request} ready={ready} onReady={setReady}
+            reducedMotion={reducedMotion} quality={quality} request={request} ready={ready} onReady={setReady}
             onSelect={select} onRetry={retry} onParts={onClose} returnLabel="Back to demo" errorDescription="You can continue configuring your PC in the builder." />}
       </PreviewErrorBoundary>
       {selected && <div className="pc3d-demo-selection" role="status">Inspecting {PART_LABELS[selected]}</div>}

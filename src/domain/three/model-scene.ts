@@ -2,6 +2,7 @@ import { Box3, Color, Material, Mesh, MeshPhysicalMaterial, MeshStandardMaterial
 import { castsPreviewShadow, FOCUS_OBJECTS, logicalPart } from './part-map';
 import { CRITICAL_OBJECTS, type ModelManifest, type PreviewPart } from './scene-types';
 import { createClearPcGlassMaterial } from './pc-glass-material';
+import { previewQuality, type PreviewQuality } from './render-quality';
 
 type Transform = { object: Object3D; position: Vector3; quaternion: Quaternion; scale: Vector3; offset: Vector3 };
 type Surface = {
@@ -11,9 +12,10 @@ type Surface = {
 export type ModelInstance = {
   scene: Object3D; parts: Transform[]; surfaces: Surface[]; cables: Object3D[];
   explodeProgress: number; glassProgress: number; scratch: Vector3;
+  quality: PreviewQuality;
 };
 
-export function cloneModel(source: Object3D, manifest: ModelManifest): ModelInstance {
+export function cloneModel(source: Object3D, manifest: ModelManifest, quality = previewQuality(false)): ModelInstance {
   for (const name of CRITICAL_OBJECTS) {
     if (!source.getObjectByName(name)) throw new Error(`Missing core model object: ${name}`);
   }
@@ -36,21 +38,21 @@ export function cloneModel(source: Object3D, manifest: ModelManifest): ModelInst
       // These named groups also contain metal frames; override only their panes.
       const opticalGlass = glassPanel && material instanceof MeshPhysicalMaterial && material.transmission > 0;
       hasOpticalGlass ||= opticalGlass;
-      const owned = opticalGlass ? createClearPcGlassMaterial() : material.clone();
+      const owned = opticalGlass ? createClearPcGlassMaterial(quality.physicalGlass) : material.clone();
       const pbr = owned instanceof MeshStandardMaterial ? owned : null;
       surfaces.push({ material: owned, part, glass, opticalGlass, opacity: owned.opacity, transparent: owned.transparent,
         depthWrite: owned.depthWrite, color: pbr?.color.clone(), emissive: pbr?.emissive.clone(), emissiveIntensity: pbr?.emissiveIntensity });
       return owned;
     };
     object.material = Array.isArray(object.material) ? object.material.map(clone) : clone(object.material);
-    object.castShadow = castsPreviewShadow(object);
-    object.receiveShadow = !hasOpticalGlass;
+    object.castShadow = quality.shadows && castsPreviewShadow(object);
+    object.receiveShadow = quality.shadows && !hasOpticalGlass;
     // Transmissive surfaces should not cast solid black shadows.
     if (hasOpticalGlass || (Array.isArray(object.material) ? object.material : [object.material]).some(m => 'transmission' in m && Number(m.transmission) > 0)) object.castShadow = false;
   });
   return { scene, parts, surfaces, cables: manifest.cableObjects.flatMap(name => {
     const object = scene.getObjectByName(name); return object ? [object] : [];
-  }), explodeProgress: 0, glassProgress: 0, scratch: new Vector3() };
+  }), explodeProgress: 0, glassProgress: 0, scratch: new Vector3(), quality };
 }
 
 function hasAncestor(object: Object3D, name: string) {
@@ -87,8 +89,9 @@ export function animateModel(model: ModelInstance, explode: number, hideGlass: b
   const progress = model.explodeProgress;
   for (const part of model.parts) {
     // Chassis is the fixed anchor. Glass removal uses its own manifest offset.
+    const scaled = progress * model.quality.explosionScale;
     const amount = part.object.name === 'Case_Chassis' ? 0 : part.object.name === 'Case_SideGlass'
-      ? Math.max(progress, model.glassProgress) : progress;
+      ? Math.max(scaled, model.glassProgress) : scaled;
     part.object.position.copy(part.position).addScaledVector(part.offset, amount);
     part.object.quaternion.copy(part.quaternion);
     part.object.scale.copy(part.scale);
@@ -108,7 +111,7 @@ export function animateModel(model: ModelInstance, explode: number, hideGlass: b
     surface.material.depthWrite = fade === 0 ? surface.depthWrite : false;
   }
   // Rigid cables and coolant tubes cannot stretch to separated hardware.
-  for (const cable of model.cables) cable.visible = progress < .015 && (!visibleParts || ['gpu', 'motherboard'].every(part => visibleParts.has(part as PreviewPart)));
+  for (const cable of model.cables) cable.visible = !model.quality.hideCables && progress < .015 && (!visibleParts || ['gpu', 'motherboard'].every(part => visibleParts.has(part as PreviewPart)));
   for (const part of model.parts) if (part.object.name.startsWith('AIO_Tube_')) part.object.visible = part.object.visible && progress < .015;
 }
 

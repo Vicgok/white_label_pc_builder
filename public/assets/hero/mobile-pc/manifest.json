@@ -1,0 +1,133 @@
+{
+  "version": 1,
+  "frameCount": 24,
+  "width": 720,
+  "height": 900,
+  "format": "webp",
+  "alpha": false,
+  "background": "#F7F7F5",
+  "frames": [
+    "frame-01.webp",
+    "frame-02.webp",
+    "frame-03.webp",
+    "frame-04.webp",
+    "frame-05.webp",
+    "frame-06.webp",
+    "frame-07.webp",
+    "frame-08.webp",
+    "frame-09.webp",
+    "frame-10.webp",
+    "frame-11.webp",
+    "frame-12.webp",
+    "frame-13.webp",
+    "frame-14.webp",
+    "frame-15.webp",
+    "frame-16.webp",
+    "frame-17.webp",
+    "frame-18.webp",
+    "frame-19.webp",
+    "frame-20.webp",
+    "frame-21.webp",
+    "frame-22.webp",
+    "frame-23.webp",
+    "frame-24.webp"
+  ],
+  "totalBytes": 1147020,
+  "source": "/assets/3d/rigpilot-demo-pc.glb",
+  "sourceSha256": "8da4dfa8ff610421b5ac3297c435dfd9aa77cdb1d49358cd2925e4fac7c481b0",
+  "blenderVersion": "5.2.2 LTS",
+  "samples": 64,
+  "stages": {
+    "Case_SideGlass": {
+      "start": 0.04,
+      "end": 0.24,
+      "offset": [
+        -0.145,
+        0,
+        0.025
+      ]
+    },
+    "Case_FrontGlass": {
+      "start": 0.15,
+      "end": 0.34,
+      "factor": 0.3
+    },
+    "Case_TopPanel": {
+      "start": 0.2,
+      "end": 0.37,
+      "factor": 0.45
+    },
+    "Case_RearPanel": {
+      "start": 0.23,
+      "end": 0.38,
+      "factor": 0.1
+    },
+    "GPU": {
+      "start": 0.34,
+      "end": 0.58,
+      "factor": 0.48
+    },
+    "Motherboard": {
+      "start": 0.46,
+      "end": 0.7,
+      "factor": 0.22
+    },
+    "AIO_Radiator": {
+      "start": 0.55,
+      "end": 0.78,
+      "factor": 0.35
+    },
+    "AIO_Fan_01": {
+      "start": 0.55,
+      "end": 0.78,
+      "factor": 0.35
+    },
+    "AIO_Fan_02": {
+      "start": 0.55,
+      "end": 0.78,
+      "factor": 0.35
+    },
+    "AIO_Fan_03": {
+      "start": 0.55,
+      "end": 0.78,
+      "factor": 0.35
+    },
+    "AIO_Pump": {
+      "start": 0.55,
+      "end": 0.78,
+      "factor": 0.12,
+      "followsBoard": true
+    },
+    "RAM_01": {
+      "start": 0.65,
+      "end": 0.85,
+      "offset": [
+        -0.012,
+        0.018,
+        0
+      ],
+      "followsBoard": true
+    },
+    "RAM_02": {
+      "start": 0.65,
+      "end": 0.85,
+      "offset": [
+        -0.012,
+        0.018,
+        0
+      ],
+      "followsBoard": true
+    },
+    "PSU": {
+      "start": 0.74,
+      "end": 0.86,
+      "factor": 0.12
+    },
+    "SSD_M2": {
+      "start": 0.75,
+      "end": 0.87,
+      "factor": 0.1,
+      "followsBoard": true
+    }
+  }
+}

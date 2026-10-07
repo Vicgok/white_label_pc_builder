@@ -2,6 +2,7 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { componentById } from "../data/components";
 import { isBuildSnapshot } from "../domain/build-serialization";
+import { createBuildId } from "../utils/id";
 import type {
   BuildSnapshot,
   ComponentCategory,
@@ -9,8 +10,7 @@ import type {
   UseCase,
 } from "../types";
 
-export const newBuildId = () =>
-  `PC-${crypto.randomUUID().replaceAll("-", "").slice(0, 8).toUpperCase()}`;
+export const newBuildId = createBuildId;
 const initialBuild = (): BuildSnapshot => ({
   buildId: newBuildId(),
   useCase: "gaming",

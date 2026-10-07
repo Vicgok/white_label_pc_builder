@@ -89,7 +89,7 @@
   .pc3d-sidebar { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: start; }
   .pc3d-build-overview { grid-column: 1 / -1; }
 }
-@media (max-width: 767px) {
+@media (max-width: 768px) {
   .pc3d-heading { gap: 12px; margin-bottom: 15px; }
   .pc3d-heading h2 { font-size: 20px; gap: 8px; }
   .pc3d-build-state { font-size: 9px; max-width: 115px; }

@@ -39,10 +39,14 @@ export const heroStoryStages: readonly HeroStoryStage[] = [
 ];
 
 export const mobileHeroStoryStages: readonly HeroStoryStage[] = [
-  { ...heroStoryStages[0], description: 'Choose parts, check compatibility and inspect your build in 3D before taking it to a retailer.' },
-  { ...heroStoryStages[1], title: "See what's inside.", description: 'Open the case and explore how the main parts come together.', details: ['Case layout', 'Cooling space'] },
-  { ...heroStoryStages[3], start: .54, title: 'Check the configuration.', description: 'Platform, memory, power and clearance checks update as you choose parts.' },
-  { ...heroStoryStages[4], title: 'Understand your build.', description: 'Inspect your choices, then take the final build to your preferred retailer.' },
+  { id: 'build', label: 'Build', start: 0, eyebrow: 'INTERACTIVE PC BUILDING', title: 'Build it.\nSee it before you buy it.',
+    description: 'Choose your parts and understand the machine before finalizing your build.', actions: 'intro' },
+  { id: 'open', label: 'Open', start: .18, eyebrow: "SEE WHAT'S INSIDE", title: 'Open the build.',
+    description: 'Explore how the case, cooling and major components come together.' },
+  { id: 'check', label: 'Check', start: .48, eyebrow: 'BUILD WITH CONFIDENCE', title: 'Every part has a place.',
+    description: 'RigPilot checks your configuration while you build.' },
+  { id: 'visualize', label: 'Visualize', start: .80, eyebrow: 'YOUR BUILD, VISUALIZED', title: "Understand it before\nit's assembled.",
+    description: 'Configure it, preview it in 3D, then share the final build with your retailer.', actions: 'final' },
 ];
 
 export function heroStoryIndex(progress: number, stages: readonly HeroStoryStage[]) {

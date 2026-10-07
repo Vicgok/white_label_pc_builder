@@ -49,7 +49,7 @@ export function createHeroAnimation(model: ModelInstance): HeroAnimation {
   // Only these two flexible meshes own geometry in the hero. The cache and
   // builder stay untouched. Smooth endpoint blending keeps the AIO connected
   // while the pump and top radiator separate; this is presentation, not physics.
-  for (const part of model.parts.filter(part => part.object.name.startsWith('AIO_Tube_'))) {
+  for (const part of model.parts.filter(part => model.quality.mode === 'desktop' && part.object.name.startsWith('AIO_Tube_'))) {
     part.object.traverse(object => {
       if (!(object instanceof Mesh)) return;
       const geometry = object.geometry.clone();
@@ -110,5 +110,9 @@ export function animateHero(animation: HeroAnimation, progress: number, mobile: 
   }
   // Rigid power cables stop at their installed sockets. Avoid dangling cables
   // once the GPU unseats, while retaining them during the panel-opening stage.
-  for (const cable of model.cables) cable.visible = progress <= homepageExplosionConfig.GPU.start;
+  for (const cable of model.cables) cable.visible = !model.quality.hideCables && progress <= homepageExplosionConfig.GPU.start;
+  // Mobile skips per-vertex hose deformation; detached hoses disappear briefly.
+  if (model.quality.mode === 'mobile') for (const part of model.parts) {
+    if (part.object.name.startsWith('AIO_Tube_')) part.object.visible = progress <= homepageExplosionConfig.AIO_Radiator.start;
+  }
 }

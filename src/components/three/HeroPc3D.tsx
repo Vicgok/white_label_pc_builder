@@ -1,4 +1,4 @@
-import { Component, Suspense, useEffect, useMemo, useRef, useState, type ReactNode, type RefObject } from 'react';
+import { Component, Suspense, useCallback, useEffect, useMemo, useRef, useState, type ReactNode, type RefObject } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { Environment, Lightformer, PerspectiveCamera, useGLTF } from '@react-three/drei';
 import { Vector3 } from 'three';
@@ -8,16 +8,19 @@ import { MODEL_URL, type ModelManifest } from '../../domain/three/scene-types';
 import { usePreviewAsset } from './usePreviewAsset';
 import { AssetLoadingState } from './AssetLoadingState';
 import { PreviewUnavailable } from './Loading3D';
+import { previewQuality, type PreviewQuality } from '../../domain/three/render-quality';
+import { createPreviewRenderer, type PreviewRendererDefaults } from './createPreviewRenderer';
 
 // Module evaluation happens only after the visible hero activates its lazy chunk.
 useGLTF.preload(MODEL_URL);
 
-function CinematicBuild({ manifest, scroll, mobile, tablet, reducedMotion, onReady }: {
+function CinematicBuild({ manifest, scroll, mobile, tablet, reducedMotion, onReady, quality }: {
   manifest: ModelManifest; scroll: RefObject<HeroScrollState>; mobile: boolean; tablet: boolean;
   reducedMotion: boolean; onReady: (ready: boolean) => void;
+  quality: PreviewQuality;
 }) {
   const { scene } = useGLTF(MODEL_URL);
-  const animation = useMemo(() => createHeroAnimation(cloneModel(scene, manifest)), [scene, manifest]);
+  const animation = useMemo(() => createHeroAnimation(cloneModel(scene, manifest, quality)), [scene, manifest, quality]);
   const model = animation.model;
   const { camera, size, invalidate } = useThree();
   const progress = useRef(0);
@@ -71,60 +74,54 @@ function ContextMonitor({ onLost }: { onLost: () => void }) {
   return null;
 }
 
-function available() {
-  try {
-    const gl = document.createElement('canvas').getContext('webgl2');
-    gl?.getExtension('WEBGL_lose_context')?.loseContext();
-    return !!gl;
-  } catch { return false; }
-}
-
-function HeroStatus({ error, device, onRetry }: { error?: boolean; device?: boolean; onRetry?: () => void }) {
-  return error || device ? <PreviewUnavailable compact device={device} onRetry={onRetry} returnHref="/builder"
+function HeroStatus({ error, device, paused, onRetry }: { error?: boolean; device?: boolean; paused?: boolean; onRetry?: () => void }) {
+  return error || device || paused ? <PreviewUnavailable compact device={device} paused={paused} onRetry={onRetry} returnHref="/builder"
     description={device ? 'Explore your build in 3D on a WebGL-enabled device.' : undefined} />
     : <AssetLoadingState compact label="Preparing interactive 3D…" />;
 }
 
-class SceneBoundary extends Component<{ children: ReactNode; onRetry: () => void }, { failed: boolean }> {
-  state = { failed: false };
-  static getDerivedStateFromError() { return { failed: true }; }
-  render() { return this.state.failed ? <HeroStatus error onRetry={this.props.onRetry} /> : this.props.children; }
+class SceneBoundary extends Component<{ children: ReactNode; onRetry: () => void }, { failed: boolean; device: boolean; paused: boolean }> {
+  state = { failed: false, device: false, paused: false };
+  static getDerivedStateFromError(error: Error) { return { failed: true, device: error.name === 'PreviewWebGLInitializationError', paused: error.name === 'PreviewWebGLContextLostError' }; }
+  render() { return this.state.failed ? <HeroStatus error device={this.state.device} paused={this.state.paused} onRetry={this.props.onRetry} /> : this.props.children; }
 }
 
 export default function HeroPc3D({ scroll, mobile, tablet, reducedMotion, onReady }: {
   scroll: RefObject<HeroScrollState>; mobile: boolean; tablet: boolean; reducedMotion: boolean; onReady: (ready: boolean) => void;
 }) {
   const { manifest, failed, attempt, ready, setReady, retry } = usePreviewAsset();
-  const [supported] = useState(available);
+  const quality = previewQuality(mobile, 'hero');
+  const renderer = useCallback((defaults: PreviewRendererDefaults) => createPreviewRenderer(defaults, quality, true), [quality]);
   const [contextLost, setContextLost] = useState(false);
   useEffect(() => { onReady(ready); }, [ready, onReady]);
-  if (!supported) return <HeroStatus device />;
   if (failed) return <HeroStatus error onRetry={retry} />;
   if (!manifest) return <HeroStatus />;
   const retryScene = () => { setContextLost(false); retry(); };
   return <SceneBoundary key={attempt} onRetry={retryScene}>
-    {contextLost ? <HeroStatus error onRetry={retryScene} /> : <div className="hero-pc-canvas" data-ready={ready} aria-hidden="true">
-      <Canvas shadows dpr={mobile ? [1, 1.15] : [1, 1.5]} frameloop="demand"
-        gl={{ antialias: true, alpha: true, powerPreference: 'high-performance' }}
-        fallback={<HeroStatus device />}>
-        <PerspectiveCamera makeDefault fov={34} near={.01} far={10} position={heroCameraConfig.assembled} />
+    {contextLost ? <HeroStatus paused onRetry={retryScene} /> : <div className="hero-pc-canvas" data-ready={ready} data-quality={quality.mode} aria-hidden="true">
+      <Canvas key={quality.mode} shadows={quality.shadows} dpr={quality.dpr} frameloop="demand"
+        gl={renderer}
+        fallback={<HeroStatus device onRetry={retryScene} />}>
+        <PerspectiveCamera makeDefault fov={mobile ? 40 : 34} near={.01} far={10} position={heroCameraConfig.assembled} />
         <ContextMonitor onLost={() => { setReady(false); setContextLost(true); }} />
-        <ambientLight intensity={.5} />
-        <directionalLight position={[-1.5, 2, -.8]} intensity={2.5} castShadow shadow-mapSize={[1024, 1024]}
+        <ambientLight intensity={mobile ? .7 : .5} />
+        <directionalLight position={[-1.5, 2, -.8]} intensity={2.5} castShadow={quality.shadows} shadow-mapSize={[1024, 1024]}
           shadow-camera-left={-.8} shadow-camera-right={.8} shadow-camera-top={1} shadow-camera-bottom={-.5}
           shadow-camera-near={.1} shadow-camera-far={5} shadow-bias={-.0002} shadow-normalBias={.0015} />
         <directionalLight position={[-.4, .9, -1.6]} intensity={1.1} />
-        <directionalLight position={[1, 1.5, .7]} intensity={2} />
-        <Environment resolution={128} frames={1} environmentIntensity={1.25}>
+        {!mobile && <directionalLight position={[1, 1.5, .7]} intensity={2} />}
+        <Environment resolution={quality.environmentResolution} frames={1} environmentIntensity={1.25}>
           <Lightformer position={[-2, 2, 1]} rotation={[0, Math.PI / 2, 0]} scale={[3, 5, 1]} intensity={3} />
           <Lightformer position={[1, 3, -2]} rotation={[Math.PI / 3, 0, 0]} scale={[4, 3, 1]} intensity={2} />
-          <Lightformer position={[2, 1, 2]} rotation={[0, -Math.PI / 2, 0]} scale={[2, 4, 1]} intensity={3} />
+          {!mobile && <Lightformer position={[2, 1, 2]} rotation={[0, -Math.PI / 2, 0]} scale={[2, 4, 1]} intensity={3} />}
         </Environment>
-        <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -.004, 0]} receiveShadow>
+        {quality.shadows ? <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -.004, 0]} receiveShadow>
           <planeGeometry args={[5, 5]} /><shadowMaterial opacity={.16} />
-        </mesh>
+        </mesh> : <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -.004, 0]} scale={[.23, .32, 1]}>
+          <circleGeometry args={[1, 32]} /><meshBasicMaterial color="#000000" transparent opacity={.06} depthWrite={false} />
+        </mesh>}
         <Suspense fallback={null}>
-          <CinematicBuild manifest={manifest} scroll={scroll} mobile={mobile} tablet={tablet} reducedMotion={reducedMotion} onReady={setReady} />
+          <CinematicBuild manifest={manifest} scroll={scroll} mobile={mobile} tablet={tablet} reducedMotion={reducedMotion} quality={quality} onReady={setReady} />
         </Suspense>
       </Canvas>
     </div>}

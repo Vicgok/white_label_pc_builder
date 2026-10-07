@@ -76,6 +76,12 @@ Start or load a build, then switch between **Configure** and **3D Preview**. Rec
 
 The homepage leads with an interactive demo at `/#3d-preview`. Three.js and the existing single GLB are prefetched on viewport proximity or intent, with the demo canvas mounted only after activation. The demo never writes builder data. Builder mode loads Three.js only on Preview activation or explicit hover/focus intent. Both viewers render on demand.
 
+Mobile builder quality is centralized in `src/domain/three/render-quality.ts`: DPR 1–1.15, no antialiasing or real-time shadows, transparent standard glass, a smaller studio environment and hidden power cables. Fans are static; orbit and pinch zoom, glass removal, selection and shorter explode offsets remain available in the builder. Screen size chooses quality only: support is determined by initialization of the actual canvas. Three.js r180 requires WebGL2. Initialization, loading and context-loss failures offer Retry without disabling the builder.
+
+At 768px and below, the homepage hero is normal HTML with one existing 203 KB assembled PC WebP, a catalog example with compatibility/pricing, and links into the builder. It has no canvas, scroll player or 3D loading state. Mobile homepage demo actions also open builder 3D without prefetching Three.js. Desktop keeps its existing live 3D hero and demo; mobile builder 3D remains interactive. See [docs/mobile-hero.md](docs/mobile-hero.md).
+
+The unchanged 4.14 MiB GLB has approximately 313,460 assembled triangles, 33 unique meshes (42 mesh instances), 12 materials and no textures. Hiding mobile power cables removes 12,096 triangles. Physical iOS/Android frame-rate and GPU-memory checks remain necessary; no device support is inferred from a user agent.
+
 Future analytics can listen to `rigpilot:preview` window events; their typed `detail` is defined in `src/domain/three/preview-events.ts`. No analytics service is installed.
 
 This is a representative showcase, including for catalog SKUs with different geometry. HTML panels show the actual selected catalog products, prices and messages from the existing compatibility engine. Geometry does not perform collision checks. The viewer clones the cached scene/materials, preserves installed transforms and renders on demand. WebGL/model failures stay within the preview tab.
