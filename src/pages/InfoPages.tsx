@@ -16,7 +16,8 @@ export function HowItWorksPage() {
       <div className="brand-values">{productConfig.trustPoints.map(point => <span key={point}>{point}</span>)}</div>
       <div className="editorial-topics">
         {productConfig.howItWorks.map((step, index) => (
-          <section key={step.title}><span>0{index + 1}</span><h2>{step.title}</h2><p>{step.description}</p></section>
+          <section key={step.title} className={index === 3 ? 'preview-flow-step' : ''}><span>0{index + 1}</span><h2>{step.title}</h2><p>{step.description}</p>
+            {index === 3 && <Link to="/builder?view=3d" className="button text">Explore in 3D <ArrowUpRight size={16} /></Link>}</section>
         ))}
       </div>
       <Link className="button primary" to="/builder">Start your build <ArrowUpRight size={17} /></Link>

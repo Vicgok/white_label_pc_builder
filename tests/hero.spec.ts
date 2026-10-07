@@ -1,25 +1,35 @@
-﻿import { expect, test, type Page } from '@playwright/test';
+import { expect, test, type Page } from '@playwright/test';
+
+test.use({ launchOptions: { args: ['--use-angle=swiftshader', '--enable-unsafe-swiftshader'] } });
+test.setTimeout(90000);
 
 async function setHeroProgress(page: Page, progress: number) {
-  await page.evaluate(async value => {
+  await page.evaluate(value => {
     const hero = document.querySelector<HTMLElement>('.hero-pc-scroll')!;
-    const top = hero.getBoundingClientRect().top + window.scrollY;
-    window.scrollTo(0, top + (hero.offsetHeight - window.innerHeight) * value);
-    await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+    window.scrollTo(0, hero.getBoundingClientRect().top + window.scrollY + (hero.offsetHeight - window.innerHeight) * value);
   }, progress);
 }
 
-async function positions(page: Page) {
-  return page.locator('.hero-pc-layer').evaluateAll(elements => Object.fromEntries(elements.map(element => {
-    const image = element as HTMLImageElement;
-    const style = getComputedStyle(image);
-    const matrix = new DOMMatrixReadOnly(style.transform);
-    return [image.dataset.layer!, { x: matrix.m41, y: matrix.m42, opacity: style.opacity, display: style.display }];
-  })));
+async function sceneSnapshot(page: Page) {
+  return page.evaluate(async () => {
+    // Inspect the actual R3F scene in the test, without adding production debug UI.
+    const fiberUrl = '/node_modules/.vite/deps/@react-three_fiber.js';
+    const { _roots } = await import(/* @vite-ignore */ fiberUrl);
+    const state = _roots.get(document.querySelector('.hero-pc-canvas canvas')).store.getState();
+    const names = ['Case_Chassis', 'Case_SideGlass', 'Case_TopPanel', 'Motherboard', 'GPU', 'RAM_01', 'AIO_Radiator', 'AIO_Fan_01', 'AIO_Pump', 'PSU', 'SSD_M2'];
+    const parts: Record<string, number[]> = {};
+    for (const name of names) parts[name] = state.scene.getObjectByName(name).position.toArray();
+    const materials: { opacity: number; transmission: number; roughness: number }[] = [];
+    state.scene.traverse((object: { isMesh?: boolean; material?: { name?: string; opacity: number; transmission: number; roughness: number } }) => {
+      if (object.isMesh && object.material?.name === 'RigPilot_ClearTemperedGlass') materials.push(object.material);
+    });
+    return { parts, camera: state.camera.position.toArray() as number[], controls: !!state.controls,
+      glass: materials.map(material => ({ opacity: material.opacity, transmission: material.transmission, roughness: material.roughness })) };
+  });
 }
 
 for (const width of [1440, 1280, 1024, 768, 390]) {
-  test(`photographic hardware visibly assembles, explodes and holds at ${width}px`, async ({ page }) => {
+  test(`real GLB opens panels first, explodes coherently and reverses at ${width}px`, async ({ page }) => {
     await page.setViewportSize({ width, height: width === 390 ? 844 : 900 });
     await page.emulateMedia({ reducedMotion: 'no-preference' });
     const errors: string[] = [];
@@ -27,157 +37,99 @@ for (const width of [1440, 1280, 1024, 768, 390]) {
     page.on('console', message => { if (message.type() === 'error') errors.push(message.text()); });
     await page.goto('/');
     const scene = page.locator('.hero-pc-scene');
-    const sticky = page.locator('.hero-pc-sticky');
-    const copy = page.locator('.hero-pc-copy');
-    const summary = page.getByRole('region', { name: 'Featured build summary' });
-    await expect(scene).toHaveAttribute('data-ready', 'true');
-    await expect(page.locator('.hero-pc-layer')).toHaveCount(width < 768 ? 4 : 7);
-    await expect(page.locator('.hero-pc-assembled')).toHaveCount(0);
-    await expect(sticky).toHaveCSS('position', 'sticky');
-    expect(await page.locator('.hero-pc-scroll').evaluate(element => (element as HTMLElement).offsetHeight / innerHeight)).toBeCloseTo(width < 768 ? 1.6 : 2.2, 2);
-    expect(await scene.locator('img').evaluateAll(images => images.every(element => {
-      const image = element as HTMLImageElement;
-      return image.currentSrc.endsWith('.webp') && image.naturalWidth === 1600 && image.naturalHeight === 1600 && getComputedStyle(image).objectFit === 'contain';
-    }))).toBe(true);
-    await expect(scene.locator('svg, [data-callout], .hero-pc-line, .hero-pc-callout')).toHaveCount(0);
-    expect(await scene.textContent()).toBe('');
-    await expect(copy).toHaveCSS('opacity', '1');
+    const summary = page.getByRole('region', { name: 'Interactive 3D Preview invitation' });
+    await expect(scene).toHaveAttribute('data-ready', 'true', { timeout: 60000 });
+    await expect(scene.locator('canvas')).toHaveCount(1);
+    await expect(scene.locator('img, svg, [data-callout], .hero-pc-layer')).toHaveCount(0);
+    await expect(page.locator('.hero-pc-sticky')).toHaveCSS('position', 'sticky');
+    await expect(page.locator('.hero-pc-copy h1')).toHaveText('Build it.See it before you buy it.');
     await expect(summary).toBeHidden();
-    await setHeroProgress(page, 0);
-    const assembled = await positions(page);
-    for (const part of Object.values(assembled)) {
-      expect(part.x).toBe(0); expect(part.y).toBe(0);
-      expect(part.opacity).toBe('1'); expect(part.display).not.toBe('none');
-    }
-    await page.screenshot({ path: `artifacts/hero-${width}-assembled.png` });
-    await setHeroProgress(page, .17);
-    expect(await positions(page)).toEqual(assembled);
-    await setHeroProgress(page, .45);
-    expect(Number(await copy.evaluate(element => getComputedStyle(element).opacity))).toBeCloseTo(.35, 2);
-    await setHeroProgress(page, .5);
-    const opening = await positions(page);
-    expect(opening.gpu.x).toBeGreaterThan(15);
-    expect(opening.cooler.y).toBeLessThan(-10);
-    expect(opening.motherboard.x).toBeLessThan(-5);
-    expect(opening.case).toEqual(assembled.case);
-    expect((await sticky.boundingBox())!.y).toBeCloseTo(0);
-    await expect(scene.locator('.hero-pc-layer-stack')).toHaveCSS('opacity', '1');
-    await page.screenshot({ path: `artifacts/hero-${width}-opening.png` });
-    await setHeroProgress(page, .82);
-    const exploded = await positions(page);
-    expect(exploded.gpu.x).toBeGreaterThan(opening.gpu.x);
-    expect(exploded.cooler.y).toBeLessThan(opening.cooler.y);
-    expect(exploded.motherboard.x).toBeLessThan(opening.motherboard.x);
-    expect(exploded.case).toEqual(assembled.case);
-    if (width >= 768) {
-      expect(exploded.ram.y).toBeLessThan(-10);
-      expect(exploded.psu.x).toBeLessThan(-10);
-      expect(exploded.storage.x).toBeGreaterThan(10);
-    }
-    const sceneTransform = await scene.evaluate(element => getComputedStyle(element).transform);
-    await setHeroProgress(page, .92);
-    expect(await positions(page)).toEqual(exploded);
-    expect(await scene.evaluate(element => getComputedStyle(element).transform)).toBe(sceneTransform);
-    await expect(summary).toHaveCSS('opacity', '1');
-    expect(await summary.evaluate(element => (element as HTMLElement).inert)).toBe(false);
-    await expect(copy).toBeHidden();
-    await expect(summary.getByRole('link', { name: 'Customize Build' })).toBeVisible();
-    const summaryBox = (await summary.boundingBox())!, visualBox = (await page.locator('.hero-pc-visual').boundingBox())!;
-    if (width >= 768) expect(summaryBox.x + summaryBox.width).toBeLessThanOrEqual(visualBox.x);
-    else expect(summaryBox.y).toBeGreaterThanOrEqual(visualBox.y + visualBox.height - 1);
-    await page.screenshot({ path: `artifacts/hero-${width}-exploded.png` });
+    const assembled = await sceneSnapshot(page);
+    expect(assembled.controls).toBe(false);
+    expect(assembled.glass).toHaveLength(2);
+    expect(assembled.glass.every(glass => glass.transmission === 0 && glass.opacity === .14)).toBe(true);
+
+    await setHeroProgress(page, .25);
+    await expect.poll(async () => (await sceneSnapshot(page)).parts.Case_SideGlass[0], { timeout: 15000 }).toBeLessThan(assembled.parts.Case_SideGlass[0] - .09);
+    const opened = await sceneSnapshot(page);
+    for (const name of ['GPU', 'Motherboard', 'RAM_01', 'PSU', 'SSD_M2', 'Case_Chassis']) expect(opened.parts[name]).toEqual(assembled.parts[name]);
+
     await setHeroProgress(page, .94);
-    expect(await positions(page)).toEqual(exploded);
-    await setHeroProgress(page, 1);
-    expect(await positions(page)).toEqual(exploded);
-    await expect(scene).toHaveCSS('opacity', '0.85');
-    await setHeroProgress(page, 1.25);
-    expect((await sticky.boundingBox())!.y).toBeLessThan(0);
-    await expect(page.locator('.intro-strip')).toBeInViewport();
-    expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+    await expect(summary).toHaveCSS('opacity', '1');
+    await expect(summary.getByRole('link', { name: 'Build My PC' })).toBeVisible();
+    await expect.poll(async () => (await sceneSnapshot(page)).parts.GPU[0], { timeout: 15000 }).toBeLessThan(assembled.parts.GPU[0] - .065);
+    // Wait for the damping to settle; reversal must recover exact positions.
+    await page.waitForTimeout(1400);
+    const exploded = await sceneSnapshot(page);
+    expect(exploded.parts.Case_Chassis).toEqual(assembled.parts.Case_Chassis);
+    expect(exploded.parts.Case_TopPanel[1]).toBeGreaterThan(exploded.parts.AIO_Radiator[1]);
+    expect(exploded.glass).toEqual(assembled.glass);
+    if (width < 768) {
+      for (const name of ['Motherboard', 'RAM_01', 'PSU', 'SSD_M2', 'AIO_Pump']) expect(exploded.parts[name]).toEqual(assembled.parts[name]);
+    } else expect(exploded.parts.Motherboard[0]).toBeLessThan(assembled.parts.Motherboard[0]);
+    await expect(page.locator('.hero-pc-copy')).toBeHidden();
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+    await page.screenshot({ path: `artifacts/hero-3d-${width}-exploded.png`, timeout: 60000 });
     await setHeroProgress(page, 0);
-    expect(await positions(page)).toEqual(assembled);
-    await expect(copy).toHaveCSS('opacity', '1');
+    await expect.poll(async () => (await sceneSnapshot(page)).parts, { timeout: 15000 }).toEqual(assembled.parts);
+    await expect(page.locator('.hero-pc-copy')).toHaveCSS('opacity', '1');
     await expect(summary).toBeHidden();
     expect(errors).toEqual([]);
   });
 }
 
-test('reduced motion alone uses a static photograph and can be toggled live', async ({ page }) => {
+test('reduced motion retains a real assembled GLB without scroll animation', async ({ page }) => {
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.goto('/');
-  await expect(page.locator('.hero-pc-scene')).toHaveAttribute('data-ready', 'true');
-  await expect(page.locator('.hero-pc-layer')).toHaveCount(0);
-  const photo = page.locator('.hero-pc-assembled');
-  await expect(photo).toBeVisible();
-  await expect(page.getByRole('region', { name: 'Featured build summary' })).toBeVisible();
+  await expect(page.locator('.hero-pc-scene')).toHaveAttribute('data-ready', 'true', { timeout: 60000 });
   await expect(page.locator('.hero-pc-sticky')).toHaveCSS('position', 'relative');
-  const transform = await photo.evaluate(element => getComputedStyle(element).transform);
-  await page.mouse.wheel(0, 400);
-  expect(await photo.evaluate(element => getComputedStyle(element).transform)).toBe(transform);
+  const initial = await sceneSnapshot(page);
+  await page.mouse.wheel(0, 350);
+  expect(await sceneSnapshot(page)).toEqual(initial);
   await page.emulateMedia({ reducedMotion: 'no-preference' });
-  await expect(page.locator('.hero-pc-layer')).toHaveCount(7);
   await expect(page.locator('.hero-pc-sticky')).toHaveCSS('position', 'sticky');
-  await setHeroProgress(page, .82);
-  expect((await positions(page)).gpu.x).toBeGreaterThan(20);
+  await setHeroProgress(page, .94);
+  await expect.poll(async () => (await sceneSnapshot(page)).parts.GPU[0]).toBeLessThan(initial.parts.GPU[0] - .06);
   await page.emulateMedia({ reducedMotion: 'reduce' });
-  await expect(photo).toBeVisible();
-  await expect(page.locator('.hero-pc-layer')).toHaveCount(0);
+  await expect.poll(async () => (await sceneSnapshot(page)).parts).toEqual(initial.parts);
 });
 
-for (const failedLayer of ['storage', 'ram', 'psu', 'gpu']) {
-  test(`failed ${failedLayer} hides only that layer`, async ({ page }) => {
-    const errors: string[] = [];
-    page.on('pageerror', error => errors.push(error.message));
-    await page.route(`**/layers/hero-${failedLayer}.webp`, route => route.fulfill({ status: 200, contentType: 'image/webp', body: 'invalid image' }));
-    await page.goto('/');
-    await expect(page.locator('.hero-pc-scene')).toHaveAttribute('data-ready', 'true');
-    await expect(page.locator(`[data-layer="${failedLayer}"]`)).toBeHidden();
-    await expect(page.locator('.hero-pc-assembled')).toHaveCount(0);
-    await setHeroProgress(page, .82);
-    const moved = await positions(page);
-    expect(moved.case.x).toBe(0);
-    expect(moved.motherboard.x).toBeLessThan(-20);
-    expect(moved.cooler.y).toBeLessThan(-20);
-    if (failedLayer !== 'gpu') expect(moved.gpu.x).toBeGreaterThan(20);
-    expect(errors).toEqual([]);
-  });
-}
-
-test('a pending optional image does not gate the visible animation', async ({ page }) => {
+test('lazy hero chunk cannot block the first paint or Start Building', async ({ page }) => {
   let release!: () => void;
   const gate = new Promise<void>(resolve => { release = resolve; });
-  await page.route('**/layers/hero-storage.webp', async route => { await gate; await route.continue(); });
+  await page.route('**/src/components/three/HeroPc3D.tsx*', async route => { await gate; await route.continue(); });
   try {
     await page.goto('/', { waitUntil: 'domcontentloaded' });
-    await page.locator('[data-layer="gpu"]').evaluate(image => (image as HTMLImageElement).decode());
-    await setHeroProgress(page, .82);
-    expect((await positions(page)).gpu.x).toBeGreaterThan(20);
-    await expect(page.locator('.hero-pc-layer-stack')).toBeVisible();
+    await expect(page.locator('.hero-pc-copy h1')).toBeVisible();
+    await expect(page.locator('.hero-pc-copy').getByRole('link', { name: 'Start Building' })).toBeVisible();
+    await expect(page.locator('.hero-pc-scene canvas')).toHaveCount(0);
+    await expect(page.locator('.hero-pc-scene .three-d-loading')).toBeVisible();
+    await expect(page.locator('.hero-pc-scene img')).toHaveCount(0);
   } finally { release(); }
-  await expect(page.locator('.hero-pc-scene')).toHaveAttribute('data-ready', 'true');
+  await expect(page.locator('.hero-pc-scene')).toHaveAttribute('data-ready', 'true', { timeout: 60000 });
+  await expect(page.locator('.hero-pc-scene .three-d-loading')).toBeHidden();
 });
 
-test('touch and high pixel density keep desktop animation; resizing keeps the correct layers', async ({ browser }) => {
-  const page = await browser.newPage({ viewport: { width: 1024, height: 900 }, hasTouch: true, deviceScaleFactor: 2 });
+test('WebGL fallback retains the hero and working product links', async ({ page }) => {
+  await page.addInitScript(() => {
+    const original = HTMLCanvasElement.prototype.getContext;
+    HTMLCanvasElement.prototype.getContext = function(this: HTMLCanvasElement, kind: string, ...args: unknown[]) {
+      if (kind.startsWith('webgl')) return null;
+      return original.call(this, kind as '2d', ...args as []) as never;
+    } as typeof original;
+  });
   await page.goto('/');
-  for (const width of [1024, 768, 767, 1024]) {
-    await page.setViewportSize({ width, height: 900 });
-    await expect(page.locator('.hero-pc-layer')).toHaveCount(width < 768 ? 4 : 7);
-    await expect(page.locator('.hero-pc-scene')).toHaveAttribute('data-ready', 'true');
-    await setHeroProgress(page, .82);
-    expect((await positions(page)).gpu.x).toBeGreaterThan(20);
-  }
-  await page.close();
+  await expect(page.getByText('Explore your build in 3D on a WebGL-enabled device.')).toBeVisible();
+  await page.locator('.hero-pc-copy').getByRole('link', { name: 'Start Building' }).click();
+  await expect(page).toHaveURL(/\/builder$/);
 });
 
-test('hero customization opens the same AIO configuration and sample price', async ({ page }) => {
+test('final hero CTA enters the existing guided builder', async ({ page }) => {
   await page.goto('/');
-  await setHeroProgress(page, .92);
-  const summary = page.getByRole('region', { name: 'Featured build summary' });
-  const price = await summary.locator('strong').textContent();
-  await summary.getByRole('link', { name: 'Customize Build' }).click();
-  const build = page.getByRole('region', { name: 'Your build summary' });
-  await expect(build.locator('.summary-total strong')).toHaveText(price!);
-  await expect(build.getByText('Nautilus 240', { exact: true })).toBeVisible();
+  await setHeroProgress(page, .94);
+  const summary = page.getByRole('region', { name: 'Interactive 3D Preview invitation' });
+  await expect(summary.getByText('Representative build', { exact: true })).toBeVisible();
+  await summary.getByRole('link', { name: 'Build My PC' }).click();
+  await expect(page).toHaveURL(/\/builder$/);
+  await expect(page.getByRole('heading', { name: 'Find your starting point.' })).toBeVisible();
 });

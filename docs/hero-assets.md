@@ -1,6 +1,14 @@
-# Homepage hero layer assets
+# Homepage 3D hero
 
-Current deployed assets and audit decisions are documented in [public/assets/hero-pc/README.md](../public/assets/hero-pc/README.md). The current hero animates seven photographic layers on desktop/tablet and four on mobile; only explicit reduced motion uses the flat assembled photograph. The section below records the previous eight-layer implementation for provenance; its callouts and panel have since been removed.
+The current hero renders the existing [RigPilot GLB](../public/assets/3d/README.md). `HeroPcScene.tsx` owns the sticky section and scroll ref; lazy `three/HeroPc3D.tsx` owns the demand-rendered scene, studio lighting and cinematic camera. No orbit controls, postprocessing, remote HDR or labels are used. Three.js loads after the first paint when the hero is visible. The shared `ThreeDLoadingState` displays the RigPilot mark, real Drei asset progress when available, and an indeterminate line during chunk loading. The scene fades in over 280ms; reduced motion disables animation. Loading and error states never use a photograph.
+
+`src/domain/three/homepage-explosion.ts` centralizes staged timing and compact, parent-local offsets based on the manifest. Panels open before hardware moves. Seated memory, pump and SSD follow the board until their own stage. Only the two cloned hose geometries deform to retain their endpoint connections; shared loader geometry and builder behavior remain unchanged. Mobile uses shorter travel and retains the board, RAM, PSU and SSD in the case. Reduced motion retains the real assembled GLB.
+
+Validation: `npm test`, `npm run build`, `npx playwright test tests/hero.spec.ts`. Browser tests cover the real scene, opening order, reverse-scroll restoration, clear glass, responsive layouts, reduced motion, lazy loading and WebGL fallback.
+
+## Archived raster layer implementation
+
+The following records earlier photographic assets for provenance. They are no longer animated by the homepage hero. Reference and audit notes are in [public/assets/hero-pc/README.md](../public/assets/hero-pc/README.md).
 
 The eight transparent photographic WebPs in `public/images/hero/photo/` share one **1600 × 1600 coordinate system**. Each contains its hardware at the assembled position with transparent padding around it. The scroll scene moves these individual raster layers; it does not animate the existing flat `pc-exploded.png`. The old SVG hardware assets have been removed. Exact generation prompts, source resolution, provenance and registration details are in [hero-photo-assets.md](hero-photo-assets.md).
 

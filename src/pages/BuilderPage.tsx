@@ -1,7 +1,12 @@
-import { useEffect, useRef, useState } from "react";
+import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import {
   Check,
+  Copy,
+  Save,
+  Share2,
+  ArrowRight,
+  Move3D,
   ChevronRight,
   Circle,
   Search,
@@ -22,6 +27,7 @@ import {
   checkPsuCompatibility,
   validateBuild,
 } from "../domain/compatibility";
+import { useBuildActions } from "../hooks/useBuildActions";
 import { calculateBuildTotal, money } from "../domain/pricing";
 import {
   categoryLabels,
@@ -34,6 +40,16 @@ import { BuildSummary } from "../components/builder/BuildSummary";
 import { Onboarding } from "../components/builder/Onboarding";
 import { Dialog, EmptyState, useToast } from "../components/ui";
 import type { BuildParts } from "../types";
+import { Loading3D, PreviewErrorBoundary } from "../components/three/Loading3D";
+import "../components/three/Pc3DPreview.css";
+import "../components/builder/BuilderExperience.css";
+import { PREVIEW_PARTS } from '../domain/three/part-map';
+import type { PreviewPart } from '../domain/three/scene-types';
+import { emitPreviewEvent } from '../domain/three/preview-events';
+
+const loadPreview = () => import('../components/three/Pc3DPreview');
+const prefetchPreview = () => { void loadPreview().catch(() => {}); };
+const contextualParts = new Set<ComponentCategory>(['case', 'gpu', 'motherboard', 'cooling', 'memory']);
 
 function candidateIssues(category: ComponentCategory, parts: BuildParts) {
   switch (category) {
@@ -76,6 +92,7 @@ function candidateIssues(category: ComponentCategory, parts: BuildParts) {
 }
 export function BuilderPage() {
   const build = useBuilderStore();
+  const actions = useBuildActions();
   const location = useLocation();
   const navigate = useNavigate();
   const initialized = useRef("");
@@ -91,6 +108,17 @@ export function BuilderPage() {
   const [reviewOpen, setReviewOpen] = useState(false);
   const [explanation, setExplanation] = useState("");
   const [invalid, setInvalid] = useState("");
+  const [view, setView] = useState<"parts" | "3d">("parts");
+  const [previewPart, setPreviewPart] = useState<PreviewPart | null>(null);
+  const [previewPrompt, setPreviewPrompt] = useState<{ part: PreviewPart; name: string } | null>(null);
+  const [previewAttempt, setPreviewAttempt] = useState(0);
+  const LazyPreview = useMemo(() => lazy(loadPreview), [previewAttempt]);
+  const openPreview = useCallback((part?: PreviewPart) => {
+    if (part) setPreviewPart(part);
+    emitPreviewEvent({ name: 'configure_to_3d_clicked', source: 'builder', part });
+    setView('3d');
+  }, []);
+  const rememberPart = useCallback((part: PreviewPart) => setPreviewPart(part), []);
   useEffect(() => {
     if (initialized.current === location.search) return;
     initialized.current = location.search;
@@ -148,8 +176,17 @@ export function BuilderPage() {
       useBuilderStore.getState().startBuild();
       navigate("/builder", { replace: true });
     }
+    if (params.get('view') === '3d') {
+      const requestedPart = params.get('part') as PreviewPart;
+      if (PREVIEW_PARTS.includes(requestedPart)) setPreviewPart(requestedPart);
+      useBuilderStore.getState().startBuild();
+      setView('3d');
+      navigate('/builder', { replace: true });
+    }
   }, [location.search, toast]);
   const selectCategory = (next: ComponentCategory, onlyCompatible = false) => {
+    setView("parts");
+    setPreviewPrompt(null);
     setCategory(next);
     setSearch("");
     setBrandFilter("all");
@@ -159,6 +196,7 @@ export function BuilderPage() {
     setReviewOpen(false);
   };
   const adjust = () => {
+    setView("parts");
     useBuilderStore.setState({ started: false });
     navigate("/builder", { replace: true });
   };
@@ -253,7 +291,7 @@ export function BuilderPage() {
     </div>
   );
   return (
-    <>
+    <div id="builder-start" className="builder-start" tabIndex={-1}>
       {invalid && (
         <div className="invalid-share" role="alert">
           <TriangleAlert size={19} />
@@ -273,13 +311,31 @@ export function BuilderPage() {
         <Onboarding onDone={(message) => setExplanation(message || "")} />
       ) : (
         <>
-          <div className="workspace-toolbar">
-            <div>
-              <span className="eyebrow">MAKE IT YOURS</span>
-              <h1>
-                Build a PC<span className="workspace-title-dot">.</span>
-              </h1>
-            </div>
+          <header className="builder-mode-bar" aria-label="Builder workspace">
+          <div className="builder-workspace-title"><h1>Build your PC</h1><span>{build.buildId}</span></div>
+          <div className="builder-view-tabs" role="tablist" aria-label="Builder view">
+            {(["parts", "3d"] as const).map(tab => <button key={tab} id={`builder-tab-${tab}`}
+              type="button" role="tab" aria-selected={view === tab} aria-controls={`builder-panel-${tab}`}
+              tabIndex={view === tab ? 0 : -1} onClick={() => tab === '3d' ? openPreview() : setView(tab)}
+              onPointerEnter={() => { if (tab === '3d') prefetchPreview(); }} onKeyDown={event => {
+                if (["ArrowLeft", "ArrowRight", "Home", "End"].includes(event.key)) {
+                  event.preventDefault();
+                  const next = event.key === "Home" ? "parts" : event.key === "End" ? "3d" : view === "parts" ? "3d" : "parts";
+                  if (next === '3d') openPreview(); else setView(next);
+                  document.getElementById(`builder-tab-${next}`)?.focus();
+                }
+              }}>{tab === "parts" ? <><SlidersHorizontal size={18} />Configure</> : <><Move3D size={18} />3D Preview</>}</button>)}
+          </div>
+          <div className="builder-workspace-actions">
+            <button className="button text" aria-label="Save" onClick={actions.save}><Save size={16} /><span>Save</span></button>
+            <button className="button outline" aria-label="Share Build" onClick={actions.share}><Share2 size={16} /><span>Share</span></button>
+          </div>
+          </header>
+          <div className="builder-brief-bar">
+          <div className="builder-mode-status"><span className={validation.issues.length ? 'warning-text' : validation.complete ? 'status-success' : 'mode-progress'}>
+            {validation.issues.length ? <TriangleAlert size={14} /> : validation.complete ? <Check size={14} /> : <Circle size={12} />}
+            {validation.issues.length ? `${validation.issues.length} compatibility notices` : validation.complete ? 'Compatibility checked' : 'Build in progress'}</span>
+            <strong>{money(calculateBuildTotal(build.selectedComponents))}</strong></div>
             <div>
               <span>
                 Budget <b>{money(build.budget)}</b>
@@ -291,6 +347,8 @@ export function BuilderPage() {
                 className="button text"
                 onClick={() => {
                   build.resetBuild();
+                  setView("parts");
+                  setPreviewPart(null); setPreviewPrompt(null);
                   setExplanation("");
                   navigate("/builder", { replace: true });
                 }}
@@ -299,20 +357,30 @@ export function BuilderPage() {
               </button>
             </div>
           </div>
-          {explanation && (
-            <div className="recommendation-note">
-              <WandNote />
-              <p>{explanation}</p>
+          {explanation && view === 'parts' && (
+            <div className="recommended-build-ready" role="status">
+              <div><span className="eyebrow">YOUR STARTING CONFIGURATION</span><h2>Your build is ready.</h2>
+                <p className="recommended-build-specs">{[parts.cpu?.name, parts.gpu?.name, parts.memory ? `${parts.memory.capacityGb}GB ${parts.memory.memoryType}` : null].filter(Boolean).join(' · ')}</p>
+                <p className={validation.issues.length ? 'warning-text' : 'status-success'}>{validation.issues.length ? 'Review the compatibility notices below' : 'All major components compatible'}</p>
+                <details><summary>Why this build?</summary><p>{explanation}</p></details></div>
+              <div className="recommended-build-actions"><button className="button primary" onClick={() => openPreview()} onPointerEnter={prefetchPreview} onFocus={prefetchPreview}><Move3D size={17} />Explore in 3D</button>
+                <button className="button outline" onClick={() => setExplanation('')}>Customize Parts</button></div>
               <button
                 className="icon-button"
-                aria-label="Dismiss recommendation explanation"
+                aria-label="Dismiss build ready message"
                 onClick={() => setExplanation("")}
               >
                 <X size={16} />
               </button>
             </div>
           )}
-          <div className="builder-layout">
+          {view === "3d" ? <section id="builder-panel-3d" role="tabpanel" aria-labelledby="builder-tab-3d" className="builder-preview-workspace">
+            <PreviewErrorBoundary key={previewAttempt} onRetry={() => setPreviewAttempt(value => value + 1)} onParts={() => setView("parts")}>
+              <Suspense fallback={<Loading3D />}>
+                <LazyPreview onEditPart={selectCategory} onParts={() => setView("parts")} initialPart={previewPart} onPartSelected={rememberPart} />
+              </Suspense>
+            </PreviewErrorBoundary>
+          </section> : <div className="builder-layout" id="builder-panel-parts" role="tabpanel" aria-labelledby="builder-tab-parts">
             <nav className="category-nav" aria-label="Component categories">
               <span className="eyebrow">COMPONENTS</span>
               {categories.map((item) => {
@@ -389,6 +457,9 @@ export function BuilderPage() {
                 </button>
               </div>
               <div className="desktop-filters">{filters}</div>
+              {previewPrompt && <div className="configure-preview-prompt" role="status"><span><Check size={14} />{previewPrompt.name} selected</span>
+                <button onClick={() => openPreview(previewPrompt.part)} onPointerEnter={prefetchPreview} onFocus={prefetchPreview}>
+                  {previewPrompt.part === 'case' ? 'See this case in 3D' : previewPrompt.part === 'cooling' ? 'Preview cooler placement' : 'View it in your build'} <ArrowRight size={15} /></button></div>}
               {category === "gpu" && parts.cpu?.integratedGraphics && (
                 <p className="integrated-note">
                   Your CPU has integrated graphics. A dedicated GPU is optional
@@ -444,7 +515,10 @@ export function BuilderPage() {
                             aria-label={`${selected ? "Selected" : "Select"} ${part.name}`}
                             onClick={() => {
                               build.selectComponent(category, part.id);
-                              if (!selected) toast(`${part.name} selected.`);
+                              if (!selected) {
+                                toast(`${part.name} selected.`); setExplanation('');
+                                if (contextualParts.has(category)) setPreviewPrompt({ part: category as PreviewPart, name: part.name });
+                              }
                             }}
                           >
                             {selected ? (
@@ -482,9 +556,15 @@ export function BuilderPage() {
               </p>
             </section>
             <aside className="desktop-summary">
+              <button className="builder-preview-entry" onClick={() => openPreview()} onPointerEnter={prefetchPreview} onFocus={prefetchPreview}>
+                <img src="/assets/hero-pc/assembled/pc.webp" alt="" loading="lazy" width="90" height="90" />
+                <span><small>3D PREVIEW</small><strong>{validation.complete ? 'Your build is ready to preview.' : 'See your build take shape.'}</strong><span>Open 3D <ArrowRight size={14} /></span></span>
+              </button>
+              <div className="builder-progress" aria-label="Build progress">{categories.map(item => <span key={item} className={parts[item] ? 'is-complete' : ''}>
+                {parts[item] ? <Check size={11} /> : <Circle size={9} />}{categoryLabels[item]}</span>)}</div>
               <BuildSummary onCategory={selectCategory} />
             </aside>
-          </div>
+          </div>}
           <div className="mobile-build-bar">
             <div>
               <small>ESTIMATED TOTAL</small>
@@ -530,9 +610,13 @@ export function BuilderPage() {
           )}
         </>
       )}
-    </>
+      {actions.manualCopy && (
+        <Dialog dark title="Copy your build" onClose={() => actions.setManualCopy(null)}>
+          <p>Your browser cannot copy automatically. Select and copy the text below.</p>
+          <label>Build text or link<textarea readOnly rows={8} value={actions.manualCopy} onFocus={event => event.currentTarget.select()} /></label>
+          <button className="button secondary" onClick={() => actions.setManualCopy(null)}><Copy size={16} />Done</button>
+        </Dialog>
+      )}
+    </div>
   );
-}
-function WandNote() {
-  return <SlidersHorizontal size={17} />;
 }

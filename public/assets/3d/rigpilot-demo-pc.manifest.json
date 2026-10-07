@@ -1,0 +1,1692 @@
+{
+  "version": 1,
+  "asset": "rigpilot-demo-pc.glb",
+  "units": "meters",
+  "coordinateSystem": {
+    "up": "+Y",
+    "front": "-Z",
+    "glassSide": "-X",
+    "secondaryChamber": "+X",
+    "transformSpace": "parent-local glTF; offsets are parent-local translations"
+  },
+  "representation": "Visually accurate Phase 1 representation, not a manufacturing digital twin",
+  "caseDimensionsMm": {
+    "height": 495,
+    "width": 290,
+    "depth": 466
+  },
+  "requiredObjects": [
+    "Case_Chassis",
+    "Case_FrontGlass",
+    "Case_SideGlass",
+    "Case_RearPanel",
+    "Case_TopPanel",
+    "Motherboard",
+    "GPU",
+    "RAM_01",
+    "RAM_02",
+    "AIO_Radiator",
+    "AIO_Pump",
+    "AIO_Tube_A",
+    "AIO_Tube_B",
+    "AIO_Fan_01",
+    "AIO_Fan_02",
+    "AIO_Fan_03",
+    "PSU",
+    "SSD_M2",
+    "SideFan_01",
+    "SideFan_02",
+    "SideFan_03",
+    "BottomFan_01",
+    "BottomFan_02",
+    "BottomFan_03",
+    "RearFan_01"
+  ],
+  "parts": {
+    "Case_Chassis": {
+      "category": "case",
+      "productId": "case-nzxt-h9-flow-2023",
+      "displayName": "NZXT H9 Flow (2023), Black",
+      "explodedOffset": [
+        0,
+        0,
+        0
+      ],
+      "installedTransform": {
+        "translation": [
+          0.0,
+          0.2475,
+          -0.0
+        ],
+        "rotation": [
+          0,
+          0,
+          0,
+          1
+        ],
+        "scale": [
+          1,
+          1,
+          1
+        ]
+      },
+      "explodedTransform": {
+        "translation": [
+          0.0,
+          0.2475,
+          0.0
+        ],
+        "rotation": [
+          0,
+          0,
+          0,
+          1
+        ],
+        "scale": [
+          1,
+          1,
+          1
+        ]
+      },
+      "boundsMeters": {
+        "min": [
+          -0.144,
+          0.0,
+          -0.233
+        ],
+        "max": [
+          0.144,
+          0.494,
+          0.233
+        ]
+      },
+      "parent": "Case"
+    },
+    "Case_SideGlass": {
+      "category": "case-panel",
+      "productId": "case-nzxt-h9-flow-2023",
+      "displayName": "NZXT H9 Flow (2023), Black",
+      "explodedOffset": [
+        -0.18,
+        0,
+        0
+      ],
+      "installedTransform": {
+        "translation": [
+          -0.143,
+          0.258,
+          -0.0
+        ],
+        "rotation": [
+          0,
+          0,
+          0,
+          1
+        ],
+        "scale": [
+          1,
+          1,
+          1
+        ]
+      },
+      "explodedTransform": {
+        "translation": [
+          -0.323,
+          0.258,
+          0.0
+        ],
+        "rotation": [
+          0,
+          0,
+          0,
+          1
+        ],
+        "scale": [
+          1,
+          1,
+          1
+        ]
+      },
+      "boundsMeters": {
+        "min": [
+          -0.145,
+          0.0475,
+          -0.2285
+        ],
+        "max": [
+          -0.14,
+          0.4685,
+          0.2285
+        ]
+      },
+      "parent": "Case"
+    },
+    "Case_FrontGlass": {
+      "category": "case-panel",
+      "productId": "case-nzxt-h9-flow-2023",
+      "displayName": "NZXT H9 Flow (2023), Black",
+      "explodedOffset": [
+        0,
+        0,
+        -0.17
+      ],
+      "installedTransform": {
+        "translation": [
+          -0.051,
+          0.258,
+          -0.231
+        ],
+        "rotation": [
+          0,
+          0,
+          0,
+          1
+        ],
+        "scale": [
+          1,
+          1,
+          1
+        ]
+      },
+      "explodedTransform": {
+        "translation": [
+          -0.051,
+          0.258,
+          -0.401
+        ],
+        "rotation": [
+          0,
+          0,
+          0,
+          1
+        ],
+        "scale": [
+          1,
+          1,
+          1
+        ]
+      },
+      "boundsMeters": {
+        "min": [
+          -0.143,
+          0.0475,
+          -0.233
+        ],
+        "max": [
+          0.041,
+          0.4685,
+          -0.228
+        ]
+      },
+      "parent": "Case"
+    },
+    "Case_RearPanel": {
+      "category": "case-panel",
+      "productId": "case-nzxt-h9-flow-2023",
+      "displayName": "NZXT H9 Flow (2023), Black",
+      "explodedOffset": [
+        0.32,
+        0,
+        0
+      ],
+      "role": "Removable service-side panel on secondary chamber; rear I/O frame belongs to chassis",
+      "installedTransform": {
+        "translation": [
+          0.1435,
+          0.257,
+          -0.0
+        ],
+        "rotation": [
+          0,
+          0,
+          0,
+          1
+        ],
+        "scale": [
+          1,
+          1,
+          1
+        ]
+      },
+      "explodedTransform": {
+        "translation": [
+          0.4635,
+          0.257,
+          0.0
+        ],
+        "rotation": [
+          0,
+          0,
+          0,
+          1
+        ],
+        "scale": [
+          1,
+          1,
+          1
+        ]
+      },
+      "boundsMeters": {
+        "min": [
+          0.142,
+          0.0445,
+          -0.231
+        ],
+        "max": [
+          0.145,
+          0.4695,
+          0.231
+        ]
+      },
+      "parent": "Case"
+    },
+    "Case_TopPanel": {
+      "category": "case-panel",
+      "productId": "case-nzxt-h9-flow-2023",
+      "displayName": "NZXT H9 Flow (2023), Black",
+      "explodedOffset": [
+        0,
+        0.24,
+        0
+      ],
+      "installedTransform": {
+        "translation": [
+          0.0,
+          0.493,
+          -0.0
+        ],
+        "rotation": [
+          0,
+          0,
+          0,
+          1
+        ],
+        "scale": [
+          1,
+          1,
+          1
+        ]
+      },
+      "explodedTransform": {
+        "translation": [
+          0.0,
+          0.733,
+          0.0
+        ],
+        "rotation": [
+          0,
+          0,
+          0,
+          1
+        ],
+        "scale": [
+          1,
+          1,
+          1
+        ]
+      },
+      "boundsMeters": {
+        "min": [
+          -0.145,
+          0.491,
+          -0.233
+        ],
+        "max": [
+          0.145,
+          0.495,
+          0.233
+        ]
+      },
+      "parent": "Case"
+    },
+    "BottomFan_01": {
+      "category": "case-fan",
+      "productId": "fan-black-120mm-representative",
+      "displayName": "Representative black 120mm case airflow fan",
+      "explodedOffset": [
+        0,
+        -0.07,
+        0
+      ],
+      "airflow": "intake",
+      "airflowDirection": [
+        0,
+        1,
+        0
+      ],
+      "nominalSizeMm": 120,
+      "assembly": "bottom",
+      "installedTransform": {
+        "translation": [
+          -0.058,
+          0.065,
+          0.122
+        ],
+        "rotation": [
+          0.0,
+          0.0,
+          -0.0,
+          1.0
+        ],
+        "scale": [
+          1,
+          1,
+          1
+        ]
+      },
+      "explodedTransform": {
+        "translation": [
+          -0.058,
+          -0.005,
+          0.122
+        ],
+        "rotation": [
+          0.0,
+          0.0,
+          -0.0,
+          1.0
+        ],
+        "scale": [
+          1,
+          1,
+          1
+        ]
+      },
+      "boundsMeters": {
+        "min": [
+          -0.118,
+          0.05245,
+          0.062
+        ],
+        "max": [
+          0.002,
+          0.07755,
+          0.182
+        ]
+      },
+      "parent": "BottomFans"
+    },
+    "BottomFan_02": {
+      "category": "case-fan",
+      "productId": "fan-black-120mm-representative",
+      "displayName": "Representative black 120mm case airflow fan",
+      "explodedOffset": [
+        0,
+        -0.07,
+        0
+      ],
+      "airflow": "intake",
+      "airflowDirection": [
+        0,
+        1,
+        0
+      ],
+      "nominalSizeMm": 120,
+      "assembly": "bottom",
+      "installedTransform": {
+        "translation": [
+          -0.058,
+          0.065,
+          -0.0
+        ],
+        "rotation": [
+          0.0,
+          0.0,
+          -0.0,
+          1.0
+        ],
+        "scale": [
+          1,
+          1,
+          1
+        ]
+      },
+      "explodedTransform": {
+        "translation": [
+          -0.058,
+          -0.005,
+          0.0
+        ],
+        "rotation": [
+          0.0,
+          0.0,
+          -0.0,
+          1.0
+        ],
+        "scale": [
+          1,
+          1,
+          1
+        ]
+      },
+      "boundsMeters": {
+        "min": [
+          -0.118,
+          0.05245,
+          -0.06
+        ],
+        "max": [
+          0.002,
+          0.07755,
+          0.06
+        ]
+      },
+      "parent": "BottomFans"
+    },
+    "BottomFan_03": {
+      "category": "case-fan",
+      "productId": "fan-black-120mm-representative",
+      "displayName": "Representative black 120mm case airflow fan",
+      "explodedOffset": [
+        0,
+        -0.07,
+        0
+      ],
+      "airflow": "intake",
+      "airflowDirection": [
+        0,
+        1,
+        0
+      ],
+      "nominalSizeMm": 120,
+      "assembly": "bottom",
+      "installedTransform": {
+        "translation": [
+          -0.058,
+          0.065,
+          -0.122
+        ],
+        "rotation": [
+          0.0,
+          0.0,
+          -0.0,
+          1.0
+        ],
+        "scale": [
+          1,
+          1,
+          1
+        ]
+      },
+      "explodedTransform": {
+        "translation": [
+          -0.058,
+          -0.005,
+          -0.122
+        ],
+        "rotation": [
+          0.0,
+          0.0,
+          -0.0,
+          1.0
+        ],
+        "scale": [
+          1,
+          1,
+          1
+        ]
+      },
+      "boundsMeters": {
+        "min": [
+          -0.118,
+          0.05245,
+          -0.182
+        ],
+        "max": [
+          0.002,
+          0.07755,
+          -0.062
+        ]
+      },
+      "parent": "BottomFans"
+    },
+    "SideFan_01": {
+      "category": "case-fan",
+      "productId": "fan-black-120mm-representative",
+      "displayName": "Representative black 120mm case airflow fan",
+      "explodedOffset": [
+        -0.075,
+        0,
+        0
+      ],
+      "airflow": "intake",
+      "airflowDirection": [
+        -1,
+        0,
+        0
+      ],
+      "nominalSizeMm": 120,
+      "assembly": "side",
+      "installedTransform": {
+        "translation": [
+          0.021,
+          0.133,
+          -0.117
+        ],
+        "rotation": [
+          0.0,
+          0.0,
+          0.70710677,
+          0.70710683
+        ],
+        "scale": [
+          1,
+          1,
+          1
+        ]
+      },
+      "explodedTransform": {
+        "translation": [
+          -0.054,
+          0.133,
+          -0.117
+        ],
+        "rotation": [
+          0.0,
+          0.0,
+          0.70710677,
+          0.70710683
+        ],
+        "scale": [
+          1,
+          1,
+          1
+        ]
+      },
+      "boundsMeters": {
+        "min": [
+          0.00845,
+          0.073,
+          -0.177
+        ],
+        "max": [
+          0.03355,
+          0.193,
+          -0.057
+        ]
+      },
+      "parent": "SideFans"
+    },
+    "SideFan_02": {
+      "category": "case-fan",
+      "productId": "fan-black-120mm-representative",
+      "displayName": "Representative black 120mm case airflow fan",
+      "explodedOffset": [
+        -0.075,
+        0,
+        0
+      ],
+      "airflow": "intake",
+      "airflowDirection": [
+        -1,
+        0,
+        0
+      ],
+      "nominalSizeMm": 120,
+      "assembly": "side",
+      "installedTransform": {
+        "translation": [
+          0.021,
+          0.256,
+          -0.117
+        ],
+        "rotation": [
+          0.0,
+          0.0,
+          0.70710677,
+          0.70710683
+        ],
+        "scale": [
+          1,
+          1,
+          1
+        ]
+      },
+      "explodedTransform": {
+        "translation": [
+          -0.054,
+          0.256,
+          -0.117
+        ],
+        "rotation": [
+          0.0,
+          0.0,
+          0.70710677,
+          0.70710683
+        ],
+        "scale": [
+          1,
+          1,
+          1
+        ]
+      },
+      "boundsMeters": {
+        "min": [
+          0.00845,
+          0.196,
+          -0.177
+        ],
+        "max": [
+          0.03355,
+          0.316,
+          -0.057
+        ]
+      },
+      "parent": "SideFans"
+    },
+    "SideFan_03": {
+      "category": "case-fan",
+      "productId": "fan-black-120mm-representative",
+      "displayName": "Representative black 120mm case airflow fan",
+      "explodedOffset": [
+        -0.075,
+        0,
+        0
+      ],
+      "airflow": "intake",
+      "airflowDirection": [
+        -1,
+        0,
+        0
+      ],
+      "nominalSizeMm": 120,
+      "assembly": "side",
+      "installedTransform": {
+        "translation": [
+          0.021,
+          0.379,
+          -0.117
+        ],
+        "rotation": [
+          0.0,
+          0.0,
+          0.70710677,
+          0.70710683
+        ],
+        "scale": [
+          1,
+          1,
+          1
+        ]
+      },
+      "explodedTransform": {
+        "translation": [
+          -0.054,
+          0.379,
+          -0.117
+        ],
+        "rotation": [
+          0.0,
+          0.0,
+          0.70710677,
+          0.70710683
+        ],
+        "scale": [
+          1,
+          1,
+          1
+        ]
+      },
+      "boundsMeters": {
+        "min": [
+          0.00845,
+          0.319,
+          -0.177
+        ],
+        "max": [
+          0.03355,
+          0.439,
+          -0.057
+        ]
+      },
+      "parent": "SideFans"
+    },
+    "RearFan_01": {
+      "category": "case-fan",
+      "productId": "fan-black-120mm-representative",
+      "displayName": "Representative black 120mm case airflow fan",
+      "explodedOffset": [
+        0,
+        0,
+        0.1
+      ],
+      "airflow": "exhaust",
+      "airflowDirection": [
+        0,
+        0,
+        1
+      ],
+      "nominalSizeMm": 120,
+      "assembly": "rear",
+      "installedTransform": {
+        "translation": [
+          -0.078,
+          0.359,
+          0.216
+        ],
+        "rotation": [
+          0.70710677,
+          -0.0,
+          -0.0,
+          0.70710683
+        ],
+        "scale": [
+          1,
+          1,
+          1
+        ]
+      },
+      "explodedTransform": {
+        "translation": [
+          -0.078,
+          0.359,
+          0.316
+        ],
+        "rotation": [
+          0.70710677,
+          -0.0,
+          -0.0,
+          0.70710683
+        ],
+        "scale": [
+          1,
+          1,
+          1
+        ]
+      },
+      "boundsMeters": {
+        "min": [
+          -0.138,
+          0.299,
+          0.20345
+        ],
+        "max": [
+          -0.018,
+          0.419,
+          0.22855
+        ]
+      },
+      "parent": "RigPilot_PC"
+    },
+    "Motherboard": {
+      "category": "motherboard",
+      "productId": "motherboard-gigabyte-b650-aorus-elite-ax-v2",
+      "displayName": "Gigabyte B650 AORUS ELITE AX V2",
+      "explodedOffset": [
+        -0.095,
+        0,
+        0.035
+      ],
+      "boardFootprintMm": [
+        305,
+        244
+      ],
+      "socket": "AM5",
+      "installedTransform": {
+        "translation": [
+          0.03,
+          0.2475,
+          0.103
+        ],
+        "rotation": [
+          0,
+          0,
+          0,
+          1
+        ],
+        "scale": [
+          1,
+          1,
+          1
+        ]
+      },
+      "explodedTransform": {
+        "translation": [
+          -0.065,
+          0.2475,
+          0.138
+        ],
+        "rotation": [
+          0,
+          0,
+          0,
+          1
+        ],
+        "scale": [
+          1,
+          1,
+          1
+        ]
+      },
+      "boundsMeters": {
+        "min": [
+          -0.015,
+          0.095,
+          -0.019
+        ],
+        "max": [
+          0.043,
+          0.4,
+          0.2295
+        ]
+      },
+      "parent": "RigPilot_PC"
+    },
+    "RAM_01": {
+      "category": "memory",
+      "productId": "memory-gskill-flare-x5-32gb",
+      "displayName": "G.Skill Flare X5 DDR5, 2 x 16GB, matte black",
+      "explodedOffset": [
+        -0.13,
+        0.015,
+        -0.02
+      ],
+      "slot": "A2",
+      "capacityGB": 16,
+      "nominalModuleHeightMm": 33,
+      "installedTransform": {
+        "translation": [
+          0.011,
+          0.324,
+          0.034
+        ],
+        "rotation": [
+          0,
+          0,
+          0,
+          1
+        ],
+        "scale": [
+          1,
+          1,
+          1
+        ]
+      },
+      "explodedTransform": {
+        "translation": [
+          -0.119,
+          0.339,
+          0.014
+        ],
+        "rotation": [
+          0,
+          0,
+          0,
+          1
+        ],
+        "scale": [
+          1,
+          1,
+          1
+        ]
+      },
+      "boundsMeters": {
+        "min": [
+          -0.0055,
+          0.2575,
+          0.029693
+        ],
+        "max": [
+          0.0275,
+          0.3905,
+          0.038307
+        ]
+      },
+      "parent": "Memory"
+    },
+    "RAM_02": {
+      "category": "memory",
+      "productId": "memory-gskill-flare-x5-32gb",
+      "displayName": "G.Skill Flare X5 DDR5, 2 x 16GB, matte black",
+      "explodedOffset": [
+        -0.13,
+        0.015,
+        -0.02
+      ],
+      "slot": "B2",
+      "capacityGB": 16,
+      "nominalModuleHeightMm": 33,
+      "installedTransform": {
+        "translation": [
+          0.011,
+          0.324,
+          0.008
+        ],
+        "rotation": [
+          0,
+          0,
+          0,
+          1
+        ],
+        "scale": [
+          1,
+          1,
+          1
+        ]
+      },
+      "explodedTransform": {
+        "translation": [
+          -0.119,
+          0.339,
+          -0.012
+        ],
+        "rotation": [
+          0,
+          0,
+          0,
+          1
+        ],
+        "scale": [
+          1,
+          1,
+          1
+        ]
+      },
+      "boundsMeters": {
+        "min": [
+          -0.0055,
+          0.2575,
+          0.003693
+        ],
+        "max": [
+          0.0275,
+          0.3905,
+          0.012307
+        ]
+      },
+      "parent": "Memory"
+    },
+    "SSD_M2": {
+      "category": "storage",
+      "productId": "storage-wd-black-1tb-m2",
+      "displayName": "WD_BLACK 1TB M.2 NVMe; unspecified sub-model",
+      "explodedOffset": [
+        -0.12,
+        -0.045,
+        0.035
+      ],
+      "formFactor": "M.2 2280",
+      "nominalFootprintMm": [
+        80,
+        22
+      ],
+      "subModel": null,
+      "installedTransform": {
+        "translation": [
+          0.024,
+          0.139,
+          0.145
+        ],
+        "rotation": [
+          0,
+          0,
+          0,
+          1
+        ],
+        "scale": [
+          1,
+          1,
+          1
+        ]
+      },
+      "explodedTransform": {
+        "translation": [
+          -0.096,
+          0.094,
+          0.18
+        ],
+        "rotation": [
+          0,
+          0,
+          0,
+          1
+        ],
+        "scale": [
+          1,
+          1,
+          1
+        ]
+      },
+      "boundsMeters": {
+        "min": [
+          0.021,
+          0.127,
+          0.1025
+        ],
+        "max": [
+          0.0256,
+          0.151,
+          0.1851
+        ]
+      },
+      "parent": "RigPilot_PC"
+    },
+    "GPU": {
+      "category": "gpu",
+      "productId": "gpu-gigabyte-rtx5070-windforce-oc-sff",
+      "displayName": "Gigabyte GeForce RTX 5070 WINDFORCE OC SFF 12G",
+      "explodedOffset": [
+        -0.16,
+        0,
+        -0.03
+      ],
+      "nominalDimensionsMm": [
+        282,
+        110,
+        50
+      ],
+      "mounting": "horizontal PCIe",
+      "powerConnector": "single 16-pin",
+      "installedTransform": {
+        "translation": [
+          -0.03,
+          0.209,
+          0.086
+        ],
+        "rotation": [
+          0,
+          0,
+          0,
+          1
+        ],
+        "scale": [
+          1,
+          1,
+          1
+        ]
+      },
+      "explodedTransform": {
+        "translation": [
+          -0.19,
+          0.209,
+          0.056
+        ],
+        "rotation": [
+          0,
+          0,
+          0,
+          1
+        ],
+        "scale": [
+          1,
+          1,
+          1
+        ]
+      },
+      "boundsMeters": {
+        "min": [
+          -0.085,
+          0.184,
+          -0.055
+        ],
+        "max": [
+          0.025,
+          0.2343,
+          0.2275
+        ]
+      },
+      "parent": "RigPilot_PC"
+    },
+    "AIO_Radiator": {
+      "category": "cooling",
+      "productId": "cooler-arctic-liquid-freezer-iii-pro-360",
+      "displayName": "ARCTIC Liquid Freezer III Pro 360",
+      "explodedOffset": [
+        0,
+        0.14,
+        0
+      ],
+      "nominalDimensionsMm": [
+        398,
+        120,
+        38
+      ],
+      "assembly": "top-aio",
+      "installedTransform": {
+        "translation": [
+          -0.058,
+          0.463,
+          -0.0
+        ],
+        "rotation": [
+          0,
+          0,
+          0,
+          1
+        ],
+        "scale": [
+          1,
+          1,
+          1
+        ]
+      },
+      "explodedTransform": {
+        "translation": [
+          -0.058,
+          0.603,
+          0.0
+        ],
+        "rotation": [
+          0,
+          0,
+          0,
+          1
+        ],
+        "scale": [
+          1,
+          1,
+          1
+        ]
+      },
+      "boundsMeters": {
+        "min": [
+          -0.118,
+          0.444,
+          -0.199
+        ],
+        "max": [
+          0.002,
+          0.482,
+          0.199
+        ]
+      },
+      "parent": "Cooling"
+    },
+    "AIO_Fan_01": {
+      "category": "cooling-fan",
+      "productId": "cooler-arctic-liquid-freezer-iii-pro-360",
+      "displayName": "ARCTIC Liquid Freezer III Pro 360",
+      "explodedOffset": [
+        0,
+        0.14,
+        0
+      ],
+      "airflow": "exhaust",
+      "airflowDirection": [
+        0,
+        1,
+        0
+      ],
+      "nominalSizeMm": 120,
+      "assembly": "top-aio",
+      "installedTransform": {
+        "translation": [
+          -0.058,
+          0.4315,
+          0.12
+        ],
+        "rotation": [
+          0.0,
+          0.0,
+          -0.0,
+          1.0
+        ],
+        "scale": [
+          1,
+          1,
+          1
+        ]
+      },
+      "explodedTransform": {
+        "translation": [
+          -0.058,
+          0.5715,
+          0.12
+        ],
+        "rotation": [
+          0.0,
+          0.0,
+          -0.0,
+          1.0
+        ],
+        "scale": [
+          1,
+          1,
+          1
+        ]
+      },
+      "boundsMeters": {
+        "min": [
+          -0.118,
+          0.41895,
+          0.06
+        ],
+        "max": [
+          0.002,
+          0.44405,
+          0.18
+        ]
+      },
+      "parent": "Cooling"
+    },
+    "AIO_Fan_02": {
+      "category": "cooling-fan",
+      "productId": "cooler-arctic-liquid-freezer-iii-pro-360",
+      "displayName": "ARCTIC Liquid Freezer III Pro 360",
+      "explodedOffset": [
+        0,
+        0.14,
+        0
+      ],
+      "airflow": "exhaust",
+      "airflowDirection": [
+        0,
+        1,
+        0
+      ],
+      "nominalSizeMm": 120,
+      "assembly": "top-aio",
+      "installedTransform": {
+        "translation": [
+          -0.058,
+          0.4315,
+          -0.0
+        ],
+        "rotation": [
+          0.0,
+          0.0,
+          -0.0,
+          1.0
+        ],
+        "scale": [
+          1,
+          1,
+          1
+        ]
+      },
+      "explodedTransform": {
+        "translation": [
+          -0.058,
+          0.5715,
+          0.0
+        ],
+        "rotation": [
+          0.0,
+          0.0,
+          -0.0,
+          1.0
+        ],
+        "scale": [
+          1,
+          1,
+          1
+        ]
+      },
+      "boundsMeters": {
+        "min": [
+          -0.118,
+          0.41895,
+          -0.06
+        ],
+        "max": [
+          0.002,
+          0.44405,
+          0.06
+        ]
+      },
+      "parent": "Cooling"
+    },
+    "AIO_Fan_03": {
+      "category": "cooling-fan",
+      "productId": "cooler-arctic-liquid-freezer-iii-pro-360",
+      "displayName": "ARCTIC Liquid Freezer III Pro 360",
+      "explodedOffset": [
+        0,
+        0.14,
+        0
+      ],
+      "airflow": "exhaust",
+      "airflowDirection": [
+        0,
+        1,
+        0
+      ],
+      "nominalSizeMm": 120,
+      "assembly": "top-aio",
+      "installedTransform": {
+        "translation": [
+          -0.058,
+          0.4315,
+          -0.12
+        ],
+        "rotation": [
+          0.0,
+          0.0,
+          -0.0,
+          1.0
+        ],
+        "scale": [
+          1,
+          1,
+          1
+        ]
+      },
+      "explodedTransform": {
+        "translation": [
+          -0.058,
+          0.5715,
+          -0.12
+        ],
+        "rotation": [
+          0.0,
+          0.0,
+          -0.0,
+          1.0
+        ],
+        "scale": [
+          1,
+          1,
+          1
+        ]
+      },
+      "boundsMeters": {
+        "min": [
+          -0.118,
+          0.41895,
+          -0.18
+        ],
+        "max": [
+          0.002,
+          0.44405,
+          -0.06
+        ]
+      },
+      "parent": "Cooling"
+    },
+    "AIO_Pump": {
+      "category": "cooling",
+      "productId": "cooler-arctic-liquid-freezer-iii-pro-360",
+      "displayName": "ARCTIC Liquid Freezer III Pro 360",
+      "explodedOffset": [
+        -0.12,
+        0.045,
+        0.015
+      ],
+      "socketCenter": [
+        0.03,
+        0.325,
+        0.119
+      ],
+      "installedTransform": {
+        "translation": [
+          -0.006,
+          0.325,
+          0.119
+        ],
+        "rotation": [
+          0,
+          0,
+          0,
+          1
+        ],
+        "scale": [
+          1,
+          1,
+          1
+        ]
+      },
+      "explodedTransform": {
+        "translation": [
+          -0.126,
+          0.37,
+          0.134
+        ],
+        "rotation": [
+          0,
+          0,
+          0,
+          1
+        ],
+        "scale": [
+          1,
+          1,
+          1
+        ]
+      },
+      "boundsMeters": {
+        "min": [
+          -0.0385,
+          0.2785,
+          0.0855
+        ],
+        "max": [
+          0.026,
+          0.3745,
+          0.1525
+        ]
+      },
+      "parent": "Cooling"
+    },
+    "AIO_Tube_A": {
+      "category": "cooling-tube",
+      "productId": "cooler-arctic-liquid-freezer-iii-pro-360",
+      "displayName": "ARCTIC Liquid Freezer III Pro 360",
+      "explodedOffset": [
+        -0.06,
+        0.095,
+        0
+      ],
+      "tubeOuterDiameterMm": 12.4,
+      "explodedBehavior": "Rigid visual separation; hoses do not simulate deformation",
+      "installedTransform": {
+        "translation": [
+          -0.0554286,
+          0.3968572,
+          -0.0555714
+        ],
+        "rotation": [
+          0,
+          0,
+          0,
+          1
+        ],
+        "scale": [
+          1,
+          1,
+          1
+        ]
+      },
+      "explodedTransform": {
+        "translation": [
+          -0.1154286,
+          0.4918572,
+          -0.0555714
+        ],
+        "rotation": [
+          0,
+          0,
+          0,
+          1
+        ],
+        "scale": [
+          1,
+          1,
+          1
+        ]
+      },
+      "boundsMeters": {
+        "min": [
+          -0.0841317,
+          0.3496403,
+          -0.2041287
+        ],
+        "max": [
+          -0.0046386,
+          0.447,
+          0.1417404
+        ]
+      },
+      "parent": "Cooling"
+    },
+    "AIO_Tube_B": {
+      "category": "cooling-tube",
+      "productId": "cooler-arctic-liquid-freezer-iii-pro-360",
+      "displayName": "ARCTIC Liquid Freezer III Pro 360",
+      "explodedOffset": [
+        -0.06,
+        0.095,
+        0
+      ],
+      "tubeOuterDiameterMm": 12.4,
+      "explodedBehavior": "Rigid visual separation; hoses do not simulate deformation",
+      "installedTransform": {
+        "translation": [
+          -0.0724286,
+          0.3835714,
+          -0.0751429
+        ],
+        "rotation": [
+          0,
+          0,
+          0,
+          1
+        ],
+        "scale": [
+          1,
+          1,
+          1
+        ]
+      },
+      "explodedTransform": {
+        "translation": [
+          -0.1324286,
+          0.4785714,
+          -0.0751429
+        ],
+        "rotation": [
+          0,
+          0,
+          0,
+          1
+        ],
+        "scale": [
+          1,
+          1,
+          1
+        ]
+      },
+      "boundsMeters": {
+        "min": [
+          -0.1048688,
+          0.3304459,
+          -0.2043272
+        ],
+        "max": [
+          -0.0056884,
+          0.447,
+          0.1054553
+        ]
+      },
+      "parent": "Cooling"
+    },
+    "PSU": {
+      "category": "psu",
+      "productId": "psu-corsair-rm850e-850",
+      "displayName": "Corsair RM850e, 850W",
+      "explodedOffset": [
+        0.2,
+        0,
+        0
+      ],
+      "nominalDimensionsMm": [
+        140,
+        150,
+        86
+      ],
+      "chamber": "secondary",
+      "variant": "Year/revision unspecified; representative housing",
+      "installedTransform": {
+        "translation": [
+          0.094,
+          0.295,
+          0.158
+        ],
+        "rotation": [
+          0,
+          0,
+          0,
+          1
+        ],
+        "scale": [
+          1,
+          1,
+          1
+        ]
+      },
+      "explodedTransform": {
+        "translation": [
+          0.294,
+          0.295,
+          0.158
+        ],
+        "rotation": [
+          0,
+          0,
+          0,
+          1
+        ],
+        "scale": [
+          1,
+          1,
+          1
+        ]
+      },
+      "boundsMeters": {
+        "min": [
+          0.051,
+          0.22,
+          0.0867
+        ],
+        "max": [
+          0.1378,
+          0.37,
+          0.2289
+        ]
+      },
+      "parent": "RigPilot_PC"
+    }
+  },
+  "aliases": {
+    "TopFan_01": "AIO_Fan_01",
+    "TopFan_02": "AIO_Fan_02",
+    "TopFan_03": "AIO_Fan_03"
+  },
+  "assemblies": {
+    "top-aio": [
+      "AIO_Radiator",
+      "AIO_Fan_01",
+      "AIO_Fan_02",
+      "AIO_Fan_03"
+    ]
+  },
+  "cableObjects": [
+    "Cable_ATX24_01",
+    "Cable_ATX24_02",
+    "Cable_ATX24_03",
+    "Cable_ATX24_04",
+    "Cable_ATX24_05",
+    "Cable_ATX24_06",
+    "Cable_GPU_Power_01",
+    "Cable_GPU_Power_02",
+    "Cable_GPU_Power_03",
+    "Cable_GPU_Power_04",
+    "Cable_GPU_Power_05",
+    "Cable_GPU_Power_06"
+  ],
+  "statistics": {
+    "blenderVersion": "5.2.2 LTS",
+    "triangles": 313460,
+    "uniqueGeometryTriangles": 169392,
+    "meshObjects": 42,
+    "materialCount": 12,
+    "textureCount": 0,
+    "fileBytes": 4342904
+  },
+  "representativeDetails": [
+    "Unspecified WD_BLACK sub-model represented as a generic black M.2 2280 module",
+    "RM850e year/revision unspecified; 140 x 150 x 86 mm representative exterior",
+    "Case fans unspecified; representative non-RGB 120mm fans",
+    "PCB details, shroud facets, pump housing and hose paths simplified from official references",
+    "M.2 lower bay exposed for inspection; primary M.2 heat guard remains installed"
+  ]
+}

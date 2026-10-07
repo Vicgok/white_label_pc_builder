@@ -33,6 +33,15 @@ Routes: `/`, `/builder`, `/builds`, `/builds/:slug`, `/components`, `/how-it-wor
 
 Deploy the standard `npm run build` output in `dist/`. Static hosting must rewrite application routes to `index.html`; the included `vercel.json` provides this for Vercel. No backend or retailer-specific production configuration is needed.
 
+### Vercel deployment
+
+- Framework preset: **Vite**; project root: this repository root.
+- Install: `npm ci` (include development dependencies for TypeScript/Vite).
+- Build: `npm run build` (includes TypeScript); output: `dist`.
+- Required environment variables: **none**. No retailer configuration is needed.
+- Keep the existing SPA rewrite: application URLs resolve to `index.html`, while `/assets/` and `/images/` remain static asset paths. See [Vercel's Vite guidance](https://vercel.com/docs/frameworks/frontend/vite).
+- Before a Git-based deployment, commit all intended changes, including the new hero/story/loading source files and the staged `public/assets/3d/` files. Local untracked files are not deployed from Git. The GLB is 4,342,904 bytes (4.14 MiB); it and the manifest are copied unchanged into `dist/assets/3d/`. Their stable filenames intentionally have no custom year-long immutable caching.
+
 ## Where things live
 
 - `src/config/`: centralized product identity, copy and accent theme.
@@ -55,8 +64,20 @@ Copy Build produces a portable parts list with workload, target, estimated price
 
 PC and hardware imagery uses locally stored, generated photorealistic studio images: graphite metal, tempered glass, neutral backgrounds, physically grounded shadows and restrained white lighting. Ten optimized JPEG assets live in `public/images/products/`; their mapping is in `src/config/product-images.ts`. Air and liquid coolers have separate images. Images are representative, not verified photographs of exact SKUs; an optional `image` field on each catalog component can supply its real product photo. Generation prompts and provenance are in [docs/product-image-prompts.md](docs/product-image-prompts.md). No runtime image-generation service or external image dependency is used.
 
-The homepage hero uses the existing photographic raster layers for a scroll-driven assembled → exploded → settled sequence, with an anchored chassis and a separate final build summary. Tablet retains the animation with shorter travel; mobile separates the GPU, motherboard and cooler. Only explicit reduced motion uses a static photograph. Image failures hide individual layers without disabling the sequence. No hardware labels or connector lines appear. Current asset attribution and behavior are in [public/assets/hero-pc/README.md](public/assets/hero-pc/README.md). Earlier imagegen prompts are archived in [docs/hero-photo-assets.md](docs/hero-photo-assets.md).
+The homepage hero lazily renders the existing `rigpilot-demo-pc.glb` in a real R3F scene after its first paint. Scroll opens the glass and panels before separating the GPU, board and cooling into a compact composition; the chassis stays fixed. Hero-specific timing and restrained manifest offsets live in `src/domain/three/homepage-explosion.ts`. The camera is cinematic, with no orbit controls. Mobile keeps smaller components installed; reduced motion keeps the 3D build assembled. Homepage and builder loading use the shared RigPilot mark, Drei asset progress and a short fade into the scene; loading/errors never use a static photo. No hardware labels or connector lines appear, and the builder scene is unchanged. See [docs/hero-assets.md](docs/hero-assets.md).
 
 Generated images must be unbranded and contain no readable labels, model/specification text, stickers, serial numbers or badges. CPU, GPU, Memory and Cooling callouts are rendered separately in semantic HTML/CSS by `ProductCallouts`, using the actual selected catalog data. Desktop callouts use leader lines and markers; smaller screens show a readable specification grid. Never ask an image generator to paint specification text into the photograph.
 
 **All prices and specifications are illustrative prototype data.** Stock, warranty, retailer services and final quotations must be verified with the retailer. No business statistics or unverified contact details are supplied.
+
+## Interactive 3D Preview
+
+Start or load a build, then switch between **Configure** and **3D Preview**. Recommendations offer **Explore in 3D**, and contextual part prompts open and focus the corresponding hardware. **Change GPU** (or another part) returns to its Configure category. `/builder?view=3d` opens Preview using the existing draft; incomplete builds show the reference chassis and selected hardware. Orbit, zoom, glass removal, camera focus/reset, fullscreen and the manifest-driven explode slider remain available.
+
+The homepage leads with an interactive demo at `/#3d-preview`. Three.js and the existing single GLB are prefetched on viewport proximity or intent, with the demo canvas mounted only after activation. The demo never writes builder data. Builder mode loads Three.js only on Preview activation or explicit hover/focus intent. Both viewers render on demand.
+
+Future analytics can listen to `rigpilot:preview` window events; their typed `detail` is defined in `src/domain/three/preview-events.ts`. No analytics service is installed.
+
+This is a representative showcase, including for catalog SKUs with different geometry. HTML panels show the actual selected catalog products, prices and messages from the existing compatibility engine. Geometry does not perform collision checks. The viewer clones the cached scene/materials, preserves installed transforms and renders on demand. WebGL/model failures stay within the preview tab.
+
+Asset generation notes are in [public/assets/3d/README.md](public/assets/3d/README.md). Validation: `npm run typecheck`, `npm test`, `npm run build`, and `npx playwright test tests/flagship3d.spec.ts tests/preview3d.spec.ts`. Browser tests use port 3000 and cover discovery, recommendation/inspection/editing, lazy loading, orbit/zoom, exact assembly, draft persistence, compatibility notices, retry, WebGL fallback and layouts at 1440/1280/1024/768/390px.

@@ -1,31 +1,32 @@
 export const productConfig = {
   name: "RigPilot",
   shortName: "RP",
-  tagline: "Build the right PC, without guessing.",
+  tagline: "Build your PC. See it before you buy it.",
   description:
-    "A guided custom PC builder that helps you create a balanced, compatible system around your budget and workload.",
+    "Choose your parts, check compatibility, and explore your build in interactive 3D before taking it to a retailer.",
   theme: {
     primary: "#2563EB",
     primaryHover: "#1D4ED8",
     primarySoft: "rgba(37, 99, 235, 0.12)",
   },
   hero: {
-    eyebrow: "CUSTOM PC BUILDING",
-    title: "Build the machine\nyou actually need.",
+    eyebrow: "INTERACTIVE PC BUILDING",
+    title: "Build it.\nSee it before you buy it.",
     description:
-      "Tell us your budget and what you use your PC for. RigPilot helps you create a balanced, compatible build without making you decode hundreds of components.",
+      "Choose your parts, check compatibility, and explore your build in interactive 3D before taking it to a retailer.",
   },
   trustPoints: [
     "Compatibility guidance",
     "Balanced configurations",
-    "Upgrade planning",
+    "Interactive 3D preview",
     "Take your build anywhere",
   ],
   howItWorks: [
-    { title: "Tell us what you're building for", description: "Gaming, editing, AI, streaming or everyday work." },
-    { title: "Set your budget", description: "RigPilot balances the configuration around what matters most." },
-    { title: "Customize your hardware", description: "Swap components while compatibility checks update." },
-    { title: "Take your build anywhere", description: "Copy or share the configuration with the retailer of your choice." },
+    { title: "Tell us what you need", description: "Gaming, editing, AI, streaming or everyday performance." },
+    { title: "Build around your budget", description: "RigPilot recommends a balanced starting configuration." },
+    { title: "Customize with confidence", description: "Swap components while compatibility checks update." },
+    { title: "See your PC in 3D", description: "Rotate, inspect and explode a representative visualization of your build." },
+    { title: "Share your configuration", description: "Take the final build to your preferred retailer." },
   ],
   pricingDisclaimer:
     "Prices shown are prototype estimates and may differ by retailer and availability.",

@@ -1,0 +1,65 @@
+.builder-start { scroll-margin-top: var(--global-header-height); }
+.builder-start:focus { outline: none; }
+.builder-mode-bar { position: sticky; top: var(--global-header-height); z-index: 40; height: var(--builder-workspace-header-height); margin: 0 auto; padding: 7px max(30px, calc((100% - 1580px) / 2)); display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 22px; background: #0B0C0F; border-bottom: 1px solid #292F39; }
+.builder-workspace-title h1 { font-size: 20px; letter-spacing: -.035em; line-height: 1.2; }
+.builder-workspace-title > span { display: block; margin-top: 4px; font-size: 9px; color: #989CA6; letter-spacing: .04em; }
+.builder-workspace-actions { display: flex; align-items: center; justify-content: flex-end; gap: 12px; }
+.builder-workspace-actions .button { min-height: 40px; padding: 9px 12px; font-size: 11px; gap: 7px; }
+.builder-mode-bar .builder-view-tabs { display: flex; gap: 6px; border: 1px solid #303745; border-radius: 8px; padding: 4px; background: #11151C; margin: 0; }
+.builder-mode-bar .builder-view-tabs > button { display: inline-flex; align-items: center; justify-content: center; gap: 9px; min-height: 40px; min-width: 160px; padding: 9px 19px; border: 0; border-radius: 5px; color: #9DA9B9; font-size: 13px; font-weight: 500; }
+.builder-mode-bar .builder-view-tabs > button[aria-selected="true"] { color: #F3F6FC; background: #2B3D56; box-shadow: 0 1px 6px #0003; }
+.builder-mode-bar .builder-view-tabs > button:hover:not([aria-selected="true"]) { background: #1B232E; color: #D7E1EF; }
+.builder-mode-status { display: flex; gap: 24px; align-items: center; }
+.builder-mode-status > span { display: inline-flex; align-items: center; gap: 7px; font-size: 11px; }
+.builder-mode-status > .mode-progress { color: #9DABBE; }
+.builder-mode-status > strong { font-size: 20px; font-weight: 500; letter-spacing: -.02em; }
+.recommended-build-ready { max-width: 1580px; margin: 0 30px 25px; border: 1px solid #334965; border-radius: 10px; padding: 25px 28px; background: linear-gradient(110deg, #192738, #141B26); display: flex; align-items: center; gap: 26px; }
+.recommended-build-ready > div:first-child { flex: 1; min-width: 0; }
+.recommended-build-ready .eyebrow { font-size: 8px; color: #9CB6D6; }
+.recommended-build-ready h2 { margin: 7px 0 10px; font-size: 28px; letter-spacing: -.035em; }
+.recommended-build-ready p { font-size: 11px; line-height: 1.6; }
+.recommended-build-ready .recommended-build-specs { color: #D8E1EC; margin-bottom: 7px; }
+.recommended-build-ready details { margin-top: 13px; color: #98A7B9; font-size: 10px; }
+.recommended-build-ready summary { cursor: pointer; }
+.recommended-build-ready details p { margin-top: 9px; }
+.recommended-build-ready > .icon-button { align-self: start; }
+.recommended-build-actions { display: flex; flex-direction: column; gap: 9px; }
+.recommended-build-actions .button { font-size: 12px; min-height: 42px; }
+.configure-preview-prompt { display: flex; align-items: center; justify-content: space-between; gap: 12px; border: 1px solid #344A65; background: #182536; border-radius: 7px; padding: 12px 15px; margin-bottom: 18px; }
+.configure-preview-prompt > span { display: flex; align-items: center; gap: 8px; font-size: 11px; color: #C7D7EC; }
+.configure-preview-prompt button { display: inline-flex; align-items: center; gap: 8px; color: #A8CAF5; font-size: 11px; min-height: 32px; text-align: left; }
+.builder-preview-entry { display: flex; align-items: center; width: 100%; border: 1px solid #344A65; border-radius: 8px; padding: 10px 14px 10px 0; background: #141F2E; text-align: left; gap: 7px; }
+.builder-preview-entry img { width: 85px; height: 85px; object-fit: contain; }
+.builder-preview-entry > span { flex: 1; min-width: 0; }
+.builder-preview-entry small { display: block; font-size: 8px; letter-spacing: .13em; color: #93AFCF; }
+.builder-preview-entry strong { display: block; font-size: 12px; font-weight: 500; line-height: 1.5; margin-block: 6px; }
+.builder-preview-entry > span > span { display: flex; align-items: center; gap: 6px; font-size: 10px; color: #ADCEFA; }
+.builder-preview-entry:hover { background: #1E3047; }
+.builder-progress { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 9px 5px; padding: 15px 4px; }
+.builder-progress > span { display: flex; align-items: center; gap: 4px; font-size: 8px; color: #8C98A6; }
+.builder-progress > .is-complete { color: #93CBAA; }
+.builder-mode-bar :is(button, input):focus-visible, .builder-preview-entry:focus-visible, .configure-preview-prompt button:focus-visible { outline: 2px solid #B6CDF0; outline-offset: 3px; }
+@media (min-width: 1640px) { .recommended-build-ready { margin-inline: auto; } }
+@media (max-width: 1023px) { .builder-mode-status { gap: 16px; } .builder-mode-status > span { max-width: 140px; line-height: 1.5; } }
+@media (max-width: 900px) {
+  .builder-mode-bar { grid-template-columns: 1fr auto; grid-template-rows: 32px 44px; gap: 10px 12px; padding: 12px 25px; }
+  .builder-workspace-title h1 { font-size: 17px; }
+  .builder-workspace-title > span { display: none; }
+  .builder-workspace-actions { grid-column: 2; grid-row: 1; gap: 6px; }
+  .builder-workspace-actions .button { min-height: 32px; padding: 6px 10px; }
+  .builder-mode-bar .builder-view-tabs { grid-column: 1 / -1; grid-row: 2; display: grid; grid-template-columns: 1fr 1fr; padding: 3px; }
+  .builder-mode-bar .builder-view-tabs > button { min-width: 0; min-height: 36px; padding: 7px 10px; }
+}
+@media (max-width: 767px) {
+  .builder-mode-bar { padding-inline: 17px; }
+  .builder-mode-status { width: 100%; justify-content: space-between; gap: 12px; }
+  .builder-mode-status > span { max-width: none; font-size: 10px; }
+  .builder-mode-status > strong { font-size: 16px; }
+  .recommended-build-ready { margin-inline: 17px; padding: 21px; flex-wrap: wrap; gap: 16px; position: relative; }
+  .recommended-build-ready > div:first-child { flex-basis: 100%; padding-right: 15px; }
+  .recommended-build-ready > .icon-button { position: absolute; top: 12px; right: 10px; }
+  .recommended-build-ready h2 { font-size: 25px; }
+  .recommended-build-actions { flex-direction: row; flex-wrap: wrap; width: 100%; }
+  .recommended-build-actions .button { flex: 1; font-size: 11px; white-space: nowrap; padding-inline: 12px; }
+  .configure-preview-prompt { flex-wrap: wrap; }
+}

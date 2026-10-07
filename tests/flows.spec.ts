@@ -4,12 +4,10 @@ import { deserializeBuild } from '../src/domain/build-serialization';
 
 test('local product photography loads across hardware categories and cooler types', async ({ page }) => {
   await page.goto('/?brand=byos');
-  const layers = page.locator('.hero-pc-layer');
-  await expect(layers).toHaveCount(7);
-  await layers.evaluateAll(async images => Promise.all(images.map(image => (image as HTMLImageElement).decode())));
-  expect(await layers.evaluateAll(images => images.every(image => (image as HTMLImageElement).naturalWidth > 0))).toBe(true);
+  await expect(page.locator('.hero-pc-copy h1')).toBeVisible();
   const hero = page.locator('.featured-art img');
   await expect(hero).toHaveAttribute('src', '/images/products/pc-tower.jpg');
+  await hero.scrollIntoViewIfNeeded();
   await hero.evaluate(image => (image as HTMLImageElement).decode());
   expect(await hero.evaluate(image => (image as HTMLImageElement).naturalWidth)).toBeGreaterThan(1000);
   await page.goto('/builds/studio-pro');
@@ -39,7 +37,7 @@ test('one product across legacy queries, routes and history', async ({ page }) =
   const errors: string[] = []; page.on('pageerror', error => errors.push(error.message));
   await page.goto('/?brand=satnam');
   await expect(page.getByRole('link', { name: 'RigPilot home' }).first()).toBeVisible();
-  await expect(page.getByRole('heading', { name: 'Build the machine you actually need.' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: /Build it\.\s*See it before you buy it\./ })).toBeVisible();
   await expect(page.locator('body')).not.toContainText(/BYOS|Satnam|Jai Computech|Microcenter|Computer Garage 360|IT Fixer/);
   // A document marker proves internal navigation does not reload the page.
   await page.evaluate(() => { (window as unknown as { routeMarker: string }).routeMarker = 'alive'; });
@@ -47,7 +45,7 @@ test('one product across legacy queries, routes and history', async ({ page }) =
   await expect(page).toHaveURL(/\/builds$/);
   await expect(page.getByRole('heading', { name: 'Ready-to-go PCs.' })).toBeVisible();
   expect(await page.evaluate(() => (window as unknown as { routeMarker: string }).routeMarker)).toBe('alive');
-  await page.goBack(); await expect(page.getByRole('heading', { name: 'Build the machine you actually need.' })).toBeVisible();
+  await page.goBack(); await expect(page.getByRole('heading', { name: /Build it\.\s*See it before you buy it\./ })).toBeVisible();
   await page.goForward(); await expect(page).toHaveURL(/\/builds$/);
   for (const route of ['/components', '/how-it-works', '/support', '/for-retailers', '/builds/vortex-1440']) {
     await page.goto(route); await expect(page.locator('main h1')).toBeVisible();
@@ -146,7 +144,7 @@ test('budget errors, empty search and generic help', async ({ page }) => {
   await page.goto('/support');
   await page.getByRole('button', { name: 'Get Help', exact: true }).last().click();
   const dialog = page.getByRole('dialog');
-  await expect(dialog.getByRole('heading', { name: 'Take your build anywhere' })).toBeVisible();
+  await expect(dialog.getByRole('heading', { name: 'Find your starting point.' })).toBeVisible();
   await expect(dialog.locator('input')).toHaveCount(0);
   await dialog.getByRole('link', { name: 'Start Build' }).click();
   await expect(page).toHaveURL(/\/builder$/);

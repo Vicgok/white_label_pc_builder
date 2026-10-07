@@ -1,6 +1,12 @@
 node_modules/
 dist/
+.env
+.env.*
+!.env.example
 .env.local
+*.local
+*.log
+.vercel/
 *.tsbuildinfo
 playwright-report/
 test-results/
